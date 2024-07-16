@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP8266 Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .button {
+            display: block;
+            width: 100px;
+            margin: 10px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ESP8266 仪表盘</h1>
+        <p>欢迎来到ESP8266的仪表盘，这里将显示ESP8266的相关信息!</p>
+
+        <a href="/refresh" class="button">Refresh</a>
+    </div>
+</body>
+
+</html>
