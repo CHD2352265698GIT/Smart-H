@@ -9,3 +9,5 @@ ESP8266WebServer esp8266_server(80); // 建立ESP8266WebServer对象，对象名
                                      // 网络服务器标准http端口号为80，因此这里使用80为端口号
 char sta_ssid[32] = {0};
 char sta_password[64] = {0};
+char sta_ssid_len = 0;     // 账号长度
+char sta_password_len = 0; // 密码长度

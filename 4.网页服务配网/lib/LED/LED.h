@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-
 class LED
 {
 private:
@@ -63,3 +62,5 @@ public:
         }
     }
 };
+
+extern LED led; // 实例化LED类
