@@ -75,13 +75,17 @@ char index_html[HTMLSIZE] = {0}; // 定义网页内容数组,大小为10KB
 class Webserver
 {
 private:
-  const char *ssid = "ziroom2102";     // WiFi名称
-  const char *password = "4001001111"; // WiFi密码
-  int i = 0;                           // 计数器
+  const char *ssid_home = "ziroom2102";       // WiFi名称
+  const char *password_home = "4001001111";   // WiFi密码
+  const char *ssid_iphone = "chdwi";          // WiFi名称
+  const char *password_iphone = "1234567890"; // WiFi密码
+  int i = 0;                                  // 计数器
 public:
   void connect() // 连接WiFi
   {
-    wifiMulti.addAP(ssid, password);        // 添加WiFi名称和密码
+    wifiMulti.addAP(ssid_home, password_home);     // 添加WiFi名称和密码
+    wifiMulti.addAP(ssid_iphone, password_iphone); // 添加WiFi名称和密码
+
     Serial.println("Connecting to WiFi");   // 输出连接WiFI信息
     while (wifiMulti.run() != WL_CONNECTED) // 等待WiFI连接成功
     {                                       // 此处的wifiMulti.run()是重点。通过wifiMulti.run()，NodeMCU将会在当前
@@ -119,7 +123,7 @@ void setup()
 
   webserver.connect();              // 连接WiFi
   webserver.StartServer();          // 启动HTTP服务器后，浏览器访问http://192.168.4.1/ 即可看到网页内容
-  for (int i = 0; i < 500 * 2; i++) // 等待500ms
+  for (int i = 0; i < 500 * 3; i++) // 等待500ms
   {
     led.breathing(); // 呼吸灯
   }
