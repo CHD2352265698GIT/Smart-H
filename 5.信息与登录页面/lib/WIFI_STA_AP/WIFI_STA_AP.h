@@ -15,6 +15,7 @@ extern char sta_password_len;         // 密码长度
 extern unsigned char Set_WIFI_SIGNED; // 定义设置了WIFI_SIGNED标志位
 void handleRoot();
 void handleRootPost();
+void config();
 class WIFI_STA_AP
 {
 private:
@@ -46,6 +47,7 @@ public:
         esp8266_server.on("/", HTTP_GET, handleRoot);      // 设置主页回调函数
         esp8266_server.onNotFound(handleRoot);             // 设置无法响应的http请求的回调函数
         esp8266_server.on("/", HTTP_POST, handleRootPost); // 设置Post请求回调函数
+        esp8266_server.on("/config", config);              // 配置参数
         esp8266_server.begin();                            // 启动WebServer
         Serial.println("WebServer started!");
     }
@@ -96,8 +98,13 @@ public:
         { // 如果连接上 就输出IP信息 防止未连接上break后会误输出
             Serial.println("WIFI Connected!");
             Serial.print("IP address: ");
-            Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
-            esp8266_server.stop();
+            Serial.println(WiFi.localIP());                                            // 打印esp8266的IP地址
+            dnsServer.stop();                                                          // 关闭DNS
+            char html_Buffer[INDEX_HTML_SIZE + 1];                                     // 建立buffer，用于存放html页面
+            spi_flash_read(INDEX_HTML_ADDR, (uint32_t *)html_Buffer, INDEX_HTML_SIZE); // 读取网页内容到html_Buffer中
+            html_Buffer[INDEX_HTML_SIZE] = '\0';                                       // 添加字符串结束符
+            esp8266_server.send(200, "text/html", html_Buffer);                        // 返回主页
+
             // 保存wifi信息到flash
             if (Set_WIFI_SIGNED == 1)
             {

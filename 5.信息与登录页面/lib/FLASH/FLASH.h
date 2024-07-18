@@ -14,5 +14,13 @@
 #define WIFI_PWD_LEN_ADDR FLASH_BASE_ADDR + 0x01
 // 定义index.html存储地址
 #define INDEX_HTML_ADDR FLASH_BASE_ADDR + 0x10000
+// 定义LogIn.html存储地址
+#define LOGIN_HTML_ADDR INDEX_HTML_ADDR + INDEX_HTML_SIZE
+// 定义config.html存储地址
+#define CONFIG_HTML_ADDR LOGIN_HTML_ADDR + LOGIN_HTML_SIZE
 // 定义index.html大小
-#define INDEX_HTML_SIZE 3161 - 1
+#define INDEX_HTML_SIZE 3161
+// 定义LogIn.html大小
+#define LOGIN_HTML_SIZE 3161 - 1
+// 定义config.html大小
+#define CONFIG_HTML_SIZE 3161 - 1

@@ -9,14 +9,15 @@ unsigned char Set_WIFI_SIGNED = 0; // 标志位，是否设置了wifi
 
 void handleRoot()
 {                                                                              // 访问主页回调函数
-    char *html_Buffer = (char *)malloc(INDEX_HTML_SIZE);                       // malloc分配内存
-    spi_flash_read(INDEX_HTML_SIZE, (uint32_t *)html_Buffer, INDEX_HTML_SIZE); // 读取网页内容到index_html中
+    char html_Buffer[LOGIN_HTML_SIZE + 1];                                     // 建立buffer，用于存放html页面
+    spi_flash_read(LOGIN_HTML_ADDR, (uint32_t *)html_Buffer, LOGIN_HTML_SIZE); // 读取网页内容到html_Buffer中
+    html_Buffer[LOGIN_HTML_SIZE] = '\0';                                       // 添加字符串结束符
     esp8266_server.send(200, "text/html", html_Buffer);                        // send返回html页面
-    free(html_Buffer);                                                         // free内存
 }
 
 void handleRootPost()
-{ // Post回调函数,获取账号密码
+{
+    // Post回调函数,检查是否有账号密码参数
     Serial.println("handleRootPost");
     if (esp8266_server.hasArg("ssid"))
     { // 判断是否有账号参数
@@ -48,8 +49,14 @@ void handleRootPost()
         esp8266_server.send(200, "text/html", "<meta charset='UTF-8'>error, not found password"); // 返回错误页面
         return;
     }
-    esp8266_server.send(200, "text/html", "<meta charset='UTF-8'>保存成功"); // 返回保存成功页面
-    WiFi.begin(sta_ssid, sta_password);                                      // 连接STA模式的wifi
-    Set_WIFI_SIGNED = 1;                                                     // 设置标志位，表示已经设置了密码
-    p_WIFI_STA_AP->connectNewWifi();                                         // 连接新的wifi
+
+    Set_WIFI_SIGNED = 1;             // 设置标志位，表示已经设置了密码
+    p_WIFI_STA_AP->connectNewWifi(); // 连接新的wifi
+}
+void config()
+{
+    char html_Buffer[CONFIG_HTML_SIZE + 1];                                      // 建立buffer，用于存放html页面
+    spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
+    html_Buffer[CONFIG_HTML_SIZE] = '\0';                                        // 添加字符串结束符
+    esp8266_server.send(200, "text/html", html_Buffer);                          // send返回html页面
 }
