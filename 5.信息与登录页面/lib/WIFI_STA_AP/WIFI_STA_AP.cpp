@@ -8,8 +8,11 @@ WIFI_STA_AP *p_WIFI_STA_AP;     // 创建WIFI_STA_AP实例指针
 unsigned char Set_WIFI_SIGNED = 0; // 标志位，是否设置了wifi
 
 void handleRoot()
-{ // 访问主页回调函数
-    esp8266_server.send(200, "text/html", index_html);
+{                                                                              // 访问主页回调函数
+    char *html_Buffer = (char *)malloc(INDEX_HTML_SIZE);                       // malloc分配内存
+    spi_flash_read(INDEX_HTML_SIZE, (uint32_t *)html_Buffer, INDEX_HTML_SIZE); // 读取网页内容到index_html中
+    esp8266_server.send(200, "text/html", html_Buffer);                        // send返回html页面
+    free(html_Buffer);                                                         // free内存
 }
 
 void handleRootPost()

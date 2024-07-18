@@ -47,7 +47,6 @@ public:
         esp8266_server.onNotFound(handleRoot);             // 设置无法响应的http请求的回调函数
         esp8266_server.on("/", HTTP_POST, handleRootPost); // 设置Post请求回调函数
         esp8266_server.begin();                            // 启动WebServer
-
         Serial.println("WebServer started!");
     }
 
@@ -56,8 +55,8 @@ public:
         WiFi.mode(WIFI_STA);       // 切换为STA模式
         WiFi.setAutoConnect(true); // 设置自动连接
         Serial.println("\n");
-        String temp_ss;
-        char temp[4];
+        String temp_ss;                                                                                                   // 临时存储wifi信息
+        char temp[4];                                                                                                     // 临时存储wifi信息长度
         spi_flash_read(FLASH_BASE_ADDR, (uint32_t *)temp, 4);                                                             // 读取之前保存的wifi信息
         sta_ssid_len = temp[0];                                                                                           // 读取账号长度
         sta_password_len = temp[1];                                                                                       // 读取密码长度

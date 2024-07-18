@@ -2,10 +2,8 @@
 #include <Arduino.h>
 #include <ESP8266WiFiMulti.h> //  ESP8266WiFiMulti库
 #include <ESP8266WebServer.h> //  ESP8266WebServer库
+#include <FLASH.h>
 
-#define HTMLSIZE 3161 - 1 // 网页内容大小
-
-extern char index_html[HTMLSIZE]; // 网页内容
 extern ESP8266WiFiMulti wifiMulti;
 extern ESP8266WebServer esp8266_server;
 class Webserver
@@ -46,18 +44,5 @@ public:
     {
         Serial.print("IP address:\t");
         Serial.println(WiFi.localIP());
-    } // 打印HTML内容
-    void printHTML(void)
-    {
-        Serial.print(index_html);
-    }
-    void StartServer() // 启动HTTP服务器
-    {
-        esp8266_server.begin();                                                    // 启动HTTP服务器
-        Serial.println("HTTP esp8266_server started");                             // 输出HTTP服务器启动信息
-        esp8266_server.on("/", []()                                                // 发送HTTP响应头和网页内容
-                          { esp8266_server.send(200, "text/html", index_html); }); // 处理“/”的访问请求
-        esp8266_server.onNotFound([]()                                             // 当浏览器请求的网络资源无法在服务器找到时，处理404情况的函数
-                                  { esp8266_server.send(404, "text/plain", "404: Not found"); });
     }
 };
