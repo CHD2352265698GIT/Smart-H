@@ -5,9 +5,9 @@ IPAddress apIP(192, 168, 0, 1); // esp8266-AP-IP地址
 DNSServer dnsServer;            // 创建dnsServer实例
 WIFI_STA_AP *p_WIFI_STA_AP;     // 创建WIFI_STA_AP实例指针
 
-unsigned char Set_WIFI_SIGNED = 0;             // 标志位，是否设置了wifi
 const static String LOGIN_USERNAME = "admin";  // 登录用户名
 const static String LOGIN_PASSWORD = "123456"; // 登录密码
+static char Set_wifi_flag = 0;                 // 标志位，是否设置了wifi
 void handleRoot()
 { // 访问主页回调函数
     char *html_Buffer = (char *)malloc(LOGIN_HTML_SIZE + 1);
@@ -15,6 +15,7 @@ void handleRoot()
     html_Buffer[LOGIN_HTML_SIZE] = '\0';                                       // 添加字符串结束符
     esp8266_server.send(200, "text/html", html_Buffer);                        // send返回html页面
     free(html_Buffer);                                                         // 释放html_Buffer
+    Set_wifi_flag = 0;                                                         // 重置标志位
 }
 
 void handleConfigPost(char &flag)
@@ -58,7 +59,6 @@ void handleConfigPost(char &flag)
 void handleRootPost()
 {
     // Post回调函数,检查是否有账号密码参数
-    static char Set_wifi_flag = 0; // 标志位，是否设置了wifi
     Serial.println("handleRootPost");
     if (Set_wifi_flag == 1)
     {
