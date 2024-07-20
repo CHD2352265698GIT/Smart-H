@@ -19,4 +19,4 @@
 // 定义LogIn.html大小
 #define LOGIN_HTML_SIZE 2944 - 2
 // 定义config.html大小
-#define CONFIG_HTML_SIZE 3161
+#define CONFIG_HTML_SIZE 3161 - 2
