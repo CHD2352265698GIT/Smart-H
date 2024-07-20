@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP8266 Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            /* 背景颜色，仅用于演示 */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .button {
+            display: block;
+            width: 100px;
+            margin: 10px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #4cae4c;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        form input[type='text'],
+        form input[type='submit'] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        form input[type='submit'] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form input[type='submit']:hover {
+            background-color: #0056b3;
+        }
+
+        .centered-div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class=" centered-div" style="margin-top: 30px;"><!-- div内容居中 -->
+        <form name='input' action='/' method='POST'>
+            <h1>登录</h1>
+            <label for='username'>用户名:</label>
+            <input type='text' name='username' id='username'><br>
+            <label for='userpassword'>密码:</label>
+            <input type='text' name='userpassword' id='userpassword'><br>
+            <input type='submit' value='保存'>
+        </form>
+    </div>
+</body>
+
+</html>

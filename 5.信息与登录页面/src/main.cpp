@@ -10,11 +10,11 @@ WIFI_STA_AP WIFI;    // 实例化WIFI_STA_AP类
 
 void setup()
 {
+  p_WIFI_STA_AP = &WIFI; // 保存WIFI_STA_AP类的指针
   Serial.begin(115200); // 设置串口波特率
 
   pinMode(LED_PIN, OUTPUT); // 设置GPIO模式为输出
   WIFI.connectNewWifi();    // 连接到新的WIFI网络
-  p_WIFI_STA_AP = &WIFI;    // 保存WIFI_STA_AP类的指针
 }
 
 void loop()

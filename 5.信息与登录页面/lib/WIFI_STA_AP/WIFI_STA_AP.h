@@ -47,34 +47,32 @@ public:
         esp8266_server.on("/", HTTP_GET, handleRoot);      // 设置主页回调函数
         esp8266_server.onNotFound(handleRoot);             // 设置无法响应的http请求的回调函数
         esp8266_server.on("/", HTTP_POST, handleRootPost); // 设置Post请求回调函数
-        esp8266_server.on("/config", config);              // 配置参数
-        esp8266_server.begin();                            // 启动WebServer
+        // esp8266_server.on("/config", config);              // 配置参数
+        esp8266_server.begin(); // 启动WebServer
         Serial.println("WebServer started!");
     }
 
     void connectNewWifi(void)
     {
-        WiFi.mode(WIFI_STA);       // 切换为STA模式
-        WiFi.setAutoConnect(true); // 设置自动连接
-        Serial.println("\n");
-        String temp_ss;                                                                                                   // 临时存储wifi信息
-        char temp[4];                                                                                                     // 临时存储wifi信息长度
-        spi_flash_read(FLASH_BASE_ADDR, (uint32_t *)temp, 4);                                                             // 读取之前保存的wifi信息
-        sta_ssid_len = temp[0];                                                                                           // 读取账号长度
-        sta_password_len = temp[1];                                                                                       // 读取密码长度
-        Serial.printf("sta_ssid_len:%x\n", sta_ssid_len);                                                                 // 打印账号长度
-        Serial.printf("sta_password_len:%x\n", sta_password_len);                                                         // 打印密码长度
-        int Information_len = sta_ssid_len + sta_password_len + 2;                                                        // 计算信息长度
-        spi_flash_read(WIFI_INFO_ADDR, (uint32_t *)temp_ss.c_str(), Information_len);                                     // 读取wifi信息
-        memcpy(sta_ssid, temp_ss.substring(0, sta_ssid_len).c_str(), sta_ssid_len);                                       // 读取账号
-        memcpy(sta_password, temp_ss.substring(sta_ssid_len, sta_ssid_len + sta_password_len).c_str(), sta_password_len); // 读取密码
-        Serial.println("\n");
+        WiFi.mode(WIFI_STA);                                      // 切换为STA模式
+        WiFi.setAutoConnect(true);                                // 设置自动连接
+        Serial.println("\n");                                     // 临时存储wifi信息
+        char temp[4];                                             // 临时存储wifi信息长度
+        spi_flash_read(FLASH_BASE_ADDR, (uint32_t *)temp, 4);     // 读取之前保存的wifi信息
+        sta_ssid_len = temp[0];                                   // 读取账号长度
+        sta_password_len = temp[1];                               // 读取密码长度
+        Serial.printf("sta_ssid_len:%d\n", sta_ssid_len);         // 打印账号长度
+        Serial.printf("sta_password_len:%d\n", sta_password_len); // 打印密码长度
+        int Information_len = sta_ssid_len + sta_password_len;
+        char temp_ss[Information_len + 1] = {'\0'};                           // 计算信息长度
+        spi_flash_read(WIFI_INFO_ADDR, (uint32_t *)temp_ss, Information_len); // 读取wifi信息
+        memcpy(sta_ssid, temp_ss, sta_ssid_len);                              // 读取账号
+        memcpy(sta_password, temp_ss + sta_ssid_len, sta_password_len);       // 读取密码
+        Serial.print("\t");
         Serial.println(temp_ss);
-        Serial.printf("sta_ssid:%s\n", sta_ssid);
-        Serial.printf("sta_password:%s\n", sta_password);
-        Serial.println("\n");
-        WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
-        Serial.println("");
+        Serial.printf("sta_ssid: %s\n", sta_ssid);
+        Serial.printf("sta_password: %s\n", sta_password);
+        // WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
         Serial.print("Connect to wifi");
         int count = 0;
         while (WiFi.status() != WL_CONNECTED)
@@ -98,13 +96,8 @@ public:
         { // 如果连接上 就输出IP信息 防止未连接上break后会误输出
             Serial.println("WIFI Connected!");
             Serial.print("IP address: ");
-            Serial.println(WiFi.localIP());                                            // 打印esp8266的IP地址
-            dnsServer.stop();                                                          // 关闭DNS
-            char html_Buffer[INDEX_HTML_SIZE + 1];                                     // 建立buffer，用于存放html页面
-            spi_flash_read(INDEX_HTML_ADDR, (uint32_t *)html_Buffer, INDEX_HTML_SIZE); // 读取网页内容到html_Buffer中
-            html_Buffer[INDEX_HTML_SIZE] = '\0';                                       // 添加字符串结束符
-            esp8266_server.send(200, "text/html", html_Buffer);                        // 返回主页
-
+            Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
+            dnsServer.stop();               // 关闭DNS
             // 保存wifi信息到flash
             if (Set_WIFI_SIGNED == 1)
             {
@@ -112,9 +105,11 @@ public:
                 Serial.printf("%d,%d", (int)sta_ssid_len, (int)sta_password_len);
                 // 重置WIFI_SIGNED标志位
                 spi_flash_erase_sector(FLASH_PAGE); // 先擦除之前保存的wifi信息
-                temp_ss = String(sta_ssid_len) + String(sta_password_len) + String(sta_ssid) + String(sta_password);
+                sprintf(temp_ss, "%d,%d", (int)sta_ssid_len, (int)sta_password_len);
+                strcat(temp_ss, sta_ssid);
+                strcat(temp_ss, sta_password);
                 // 读写地址对齐：当从 Flash 读取或写入数据时，起始地址必须是4的倍数。比如可以从地址0x0000、0x0004、0x0008等开始读写，但不能从0x0001、0x0002等开始。
-                spi_flash_write(FLASH_BASE_ADDR, (uint32_t *)temp_ss.c_str(), sta_ssid_len + sta_password_len + 2); // 写入新的wifi信息
+                spi_flash_write(FLASH_BASE_ADDR, (uint32_t *)temp_ss, sta_ssid_len + sta_password_len + 2); // 写入新的wifi信息
             }
             for (int i = 0; i < 500 * 3; i++) // 等待500ms
             {
