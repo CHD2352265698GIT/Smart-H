@@ -62,5 +62,3 @@ public:
         }
     }
 };
-
-extern LED led; // 实例化LED类

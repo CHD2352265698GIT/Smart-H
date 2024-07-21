@@ -91,6 +91,7 @@ public:
         WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
         Serial.print("Connect to wifi");
         int count = 0;
+        LED led; // 实例化LED类
         while (WiFi.status() != WL_CONNECTED)
         {
             led.off();
@@ -111,11 +112,13 @@ public:
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
             // dnsServer.stop();               // 关闭DNS
-            for (int i = 0; i < 500 * 3; i++) // 等待500ms
+            for (int i = 0; i < 8; i++) // 等待500ms
             {
-                led.breathing(); // 呼吸灯
+                led.on(); // 熄灭LED
+                delay(50);
+                led.off(); // 熄灭LED
+                delay(50);
             }
-            led.off(); // 熄灭LED
         }
     }
 };
