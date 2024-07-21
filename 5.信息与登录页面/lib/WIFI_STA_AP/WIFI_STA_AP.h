@@ -3,16 +3,15 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
-#include <Webserver.h>
 #include <LED.h>
 #include <FLASH.h>
-extern IPAddress apIP;                // AP模式的IP地址
-extern DNSServer dnsServer;           // DNS服务器
-extern char sta_ssid[32];             // 定义STA模式的wifi账号名
-extern char sta_password[64];         // 定义STA模式的wifi账号密码
-extern char sta_ssid_len;             // 账号长度
-extern char sta_password_len;         // 密码长度
-extern unsigned char Set_WIFI_SIGNED; // 定义设置了WIFI_SIGNED标志位
+extern IPAddress apIP;                  // AP模式的IP地址
+extern DNSServer dnsServer;             // DNS服务器
+extern char sta_ssid[32];               // 定义STA模式的wifi账号名
+extern char sta_password[64];           // 定义STA模式的wifi账号密码
+extern char sta_ssid_len;               // 账号长度
+extern char sta_password_len;           // 密码长度
+extern ESP8266WebServer esp8266_server; // 定义WebServer
 void handleRoot();
 void handleRootPost();
 void config();

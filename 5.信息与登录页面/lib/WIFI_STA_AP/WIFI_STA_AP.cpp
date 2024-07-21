@@ -1,13 +1,19 @@
 
 #include <WIFI_STA_AP.h>
 
-IPAddress apIP(192, 168, 0, 1); // esp8266-AP-IP地址
-DNSServer dnsServer;            // 创建dnsServer实例
-WIFI_STA_AP *p_WIFI_STA_AP;     // 创建WIFI_STA_AP实例指针
-
+IPAddress apIP(192, 168, 0, 1);                // esp8266-AP-IP地址
+DNSServer dnsServer;                           // 创建dnsServer实例
+WIFI_STA_AP *p_WIFI_STA_AP;                    // 创建WIFI_STA_AP实例指针
+ESP8266WebServer esp8266_server(80);           // 建立ESP8266WebServer对象，对象名称为esp8266_server
+                                               // 括号中的数字是网路服务器响应http请求的端口号
+                                               // 网络服务器标准http端口号为80，因此这里使用80为端口号
 const static String LOGIN_USERNAME = "admin";  // 登录用户名
 const static String LOGIN_PASSWORD = "123456"; // 登录密码
 static char Set_wifi_flag = 0;                 // 标志位，是否设置了wifi
+char sta_ssid[32] = {0};
+char sta_password[64] = {0};
+char sta_ssid_len = 0;     // 账号长度
+char sta_password_len = 0; // 密码长度
 void handleRoot()
 { // 访问主页回调函数
     char *html_Buffer = (char *)malloc(LOGIN_HTML_SIZE + 1);

@@ -2,11 +2,9 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266WebServer.h>
 #include <LED.h>
-#include <Webserver.h>
 #include <WIFI_STA_AP.h>
 #include <STEER_MOTOR.h>
 
-Webserver webserver;                // 实例化Webserver类
 WIFI_STA_AP WIFI;                   // 实例化WIFI_STA_AP类
 STEER_MOTOR Steer(STEER_MOTOR_PIN); // 实例化STEER_MOTOR类
 void setup()
