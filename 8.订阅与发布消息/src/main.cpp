@@ -5,10 +5,16 @@
 #include <WIFI_STA_AP.h>
 #include <STEER_MOTOR.h>
 #include <MQTT.h>
+#include <Timer_Task.h>
+#include <Ticker.h>
 
 WIFI_STA_AP WIFI; // 实例化WIFI_STA_AP类
 MQTT *aliyu;
-const char *Message = "{\"LEDSwitch\":1}";
+Ticker timer1;
+Timer_Task Task1(1);
+Timer_Task Task2(7);
+const char *Message = "{\"LEDSwitch\":%d}";
+
 void WifiConnectCallBack()
 {
   aliyu = new MQTT;
@@ -27,6 +33,8 @@ void setup()
   WIFI.initWebServer();                           // 初始化WIFI WebServer
   pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
   WIFI.connectNewWifi();                          // 连接WIFI
+  timer1.attach(1, []()
+                {Task1.Run();Task2.Run(); }); // 定时器1，每7秒执行一次
 }
 
 void loop()
@@ -39,4 +47,14 @@ void loop()
     Serial.println(aliyu->getMQTTClient()->state());
     aliyu->clientReconnect();
   }
+  Task1.RunTask([]()
+                { Serial.println(millis() / 1000); });
+  Task2.RunTask([]()
+                {
+                  char string[20];
+                  static int temp = 0;
+                  temp = !temp;
+                  sprintf(string, Message, temp);
+                  aliyu->mqttPublish(string); // 发布消息
+                });
 }

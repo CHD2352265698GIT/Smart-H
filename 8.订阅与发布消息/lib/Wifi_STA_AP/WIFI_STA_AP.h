@@ -52,6 +52,7 @@ public:
         memcpy(sta_ssid, temp_ss, sta_ssid_len);                              // 读取账号
         memcpy(sta_password, temp_ss + sta_ssid_len, sta_password_len);       // 读取密码
         Serial.print("\t");
+        temp_ss[Information_len] = '\0'; // 添加字符串结束符
         Serial.println(temp_ss);
         Serial.printf("sta_ssid: %s\n", sta_ssid);
         Serial.printf("sta_password: %s\n", sta_password);
@@ -92,7 +93,6 @@ public:
         Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
         WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
         Serial.print("Connect to wifi");
-        int count = 0;
         LED led; // 实例化LED类
         while (WiFi.status() != WL_CONNECTED)
         {
@@ -100,7 +100,6 @@ public:
             delay(250);
             led.on();
             delay(250);
-            count++;
             esp8266_server.handleClient(); // 处理http服务器访问
             Serial.print(".");
         }

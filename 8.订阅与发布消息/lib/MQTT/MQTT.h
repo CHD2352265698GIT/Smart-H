@@ -5,7 +5,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <aliyun_mqtt.h>
-#include <Ticker.h>
 #include <ArduinoJson.h>
 
 #define PRODUCT_KEY "k17hwEK9BNY"                        // 产品ID

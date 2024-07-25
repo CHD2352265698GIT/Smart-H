@@ -36,7 +36,7 @@ void MQTT::mqttSubscribe()
 {
     if (mqttClient->connected())
     {
-        mqttClient->subscribe(ALINK_TOPIC_PROP_SET);     // 订阅设备下发的命令
+        // mqttClient->subscribe(ALINK_TOPIC_PROP_SET);     // 订阅设备下发的命令
         mqttClient->subscribe(ALINK_TOPIC_PROP_POST);    // 订阅设备下发的命令
         mqttClient->subscribe(ALINK_TOPIC_PROP_CONTROL); // 订阅用户下发的信息
     }
