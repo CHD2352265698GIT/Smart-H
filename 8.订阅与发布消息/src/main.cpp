@@ -4,9 +4,7 @@
 #include <LED.h>
 #include <WIFI_STA_AP.h>
 #include <STEER_MOTOR.h>
-#include <PubSubClient.h>
 #include <MQTT.h>
-#include <Ticker.h>
 
 WIFI_STA_AP WIFI; // 实例化WIFI_STA_AP类
 MQTT *aliyu;
@@ -15,6 +13,7 @@ void WifiConnectCallBack()
 {
   aliyu = new MQTT;
   aliyu->clientReconnect();    // 连接mqtt服务器
+  aliyu->mqttSubscribe();      // 订阅消息
   aliyu->mqttPublish(Message); // 发布消息
   digitalWrite(LED_PIN, HIGH); // 关闭LED
 }
@@ -32,5 +31,12 @@ void setup()
 
 void loop()
 {
-  esp8266_server.handleClient(); // 处理http服务器访问
+  esp8266_server.handleClient();            // http服务器监听
+  aliyu->getMQTTClient()->loop();           // mqtt客户端监听
+  if (!aliyu->getMQTTClient()->connected()) // 看mqtt连接了没
+  {
+    Serial.println("mqtt disconnected!Try reconnect now...");
+    Serial.println(aliyu->getMQTTClient()->state());
+    aliyu->clientReconnect();
+  }
 }
