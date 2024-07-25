@@ -30,12 +30,11 @@ void handleConfigPost(char &flag)
     Serial.println("handleConfigPost");
     if (esp8266_server.hasArg("angle"))
     {
-        myservo.attach(2, 500, 2500);                    // 修正脉冲宽度                                             // 如果有angle参数
         int angle = esp8266_server.arg("angle").toInt(); // 获取角度值
-        myservo.write(angle);
+        steerMotor.write(angle);
         delay(1000);
         // 停止脉冲
-        myservo.detach();
+        steerMotor.detach();
         char *html_Buffer = (char *)malloc(CONFIG_HTML_SIZE + 1);
         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
         html_Buffer[CONFIG_HTML_SIZE] = '\0';                                        // 添加字符串结束符
@@ -77,7 +76,7 @@ void handleConfigPost(char &flag)
         }
         flag = 0;                                  // 设置标志位，表示已经设置了wifi
         p_WIFI_STA_AP->Write_WIFI_STA_AP_Config(); // 保存wifi信息到flash
-        p_WIFI_STA_AP->connectNewWifi();       // 连接新的wifi
+        p_WIFI_STA_AP->connectNewWifi();           // 连接新的wifi
     }
 }
 void handleRootPost()

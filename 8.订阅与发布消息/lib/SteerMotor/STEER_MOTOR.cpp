@@ -1,3 +1,3 @@
 #include <STEER_MOTOR.h>
-#include <Ticker.h>
-Servo myservo; // 声明servo对象
+
+STEER_MOTOR steerMotor; // 电机控制引脚
