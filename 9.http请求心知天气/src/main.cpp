@@ -15,14 +15,15 @@ WIFI_STA_AP WIFI;                             // 实例化WIFI_STA_AP类
 MQTT *aliyu;
 Ticker timer1;
 Timer_Task Task1(1);
-Timer_Task Task2(7);
-weather_Data weather_data;
+Timer_Task Task2(30);
+httpclientData http_data;
 void WifiConnectCallBack() // WIFI连接成功回调函数
 {
-  weather XinZhi(&Client);                                    // 心知天气
-  XinZhi.weatherRequest(Weatherkey, "chengdu", weather_data); // 发送天气请求
+  weather XinZhi(&Client);                                 // 心知天气
+  XinZhi.weatherRequest(Weatherkey, "chengdu", http_data); // 发送天气请求
   Serial.printf("地址：成都; 天气：%s; 温度：%d摄氏度; \n",
-                weather_data.weather_txt.c_str(), weather_data.temperature);
+                http_data.weather_txt.c_str(), http_data.temperature);
+  httptime Gettime(&Client, http_data);
   aliyu = new MQTT;
   aliyu->clientReconnect();    // 连接mqtt服务器
   aliyu->mqttSubscribe();      // 订阅消息
