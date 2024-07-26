@@ -20,9 +20,7 @@ public:
 class weather
 {
 private:
-    char *server_url;
     WiFiClient *espClient;
-    void AnalysisJson(const char *json, httpclientData &result);
 
 public:
     weather(WiFiClient *espClient);

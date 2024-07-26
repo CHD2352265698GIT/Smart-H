@@ -23,7 +23,9 @@ void WifiConnectCallBack() // WIFI连接成功回调函数
   XinZhi.weatherRequest(Weatherkey, "chengdu", http_data); // 发送天气请求
   Serial.printf("地址：成都; 天气：%s; 温度：%d摄氏度; \n",
                 http_data.weather_txt.c_str(), http_data.temperature);
-  httptime Gettime(&Client, http_data);
+  httptime Gettime(&Client, http_data); // 获取时间
+  Serial.printf("%d年%d月%d日 %d:%d:%d\n",
+                http_data.year, http_data.month, http_data.day, http_data.hour, http_data.minute, http_data.second);
   aliyu = new MQTT;
   aliyu->clientReconnect();    // 连接mqtt服务器
   aliyu->mqttSubscribe();      // 订阅消息
