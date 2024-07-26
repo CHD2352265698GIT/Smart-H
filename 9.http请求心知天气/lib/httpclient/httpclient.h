@@ -4,10 +4,21 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-class httpclient
+class weather_Data
+{
+public:
+    int weather_code;
+    int temperature;
+    String weather_txt;
+};
+class weather
 {
 private:
+    char *server_url;
+    WiFiClient *espClient;
+    void AnalysisJson(const char *json, weather_Data &result);
+
 public:
-    httpclient(char *server_url);
-    ~httpclient();
+    weather(WiFiClient *espClient);
+    void weatherRequest(const char *key, const char *Request_location, weather_Data &result);
 };

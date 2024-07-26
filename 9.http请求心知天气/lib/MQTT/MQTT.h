@@ -13,7 +13,7 @@
 #define LED_B 2                                          // 定义LED灯的引脚
 extern const char *Message;
 extern void mqtt_callback(char *topic, byte *payload, unsigned int length); // 回调函数
-
+extern WiFiClient Client;
 class MQTT
 {
 public:
