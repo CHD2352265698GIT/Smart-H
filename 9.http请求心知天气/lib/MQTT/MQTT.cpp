@@ -1,7 +1,7 @@
 #include <MQTT.h>
 
 // 这是post上传数据使用的模板
-const char *ALINK_BODY_FORMAT = "{\"id\":\"%u\",\"version\":\"1.0\",\"method\":\"%s\",\"params\":%s}";
+const char *ALINK_BODY_FORMAT = "{\"id\":\"%u\",\"version\":\"1.0\",\"sys\":{\"ack\":0},\"method\":\"%s\",\"params\":%s}";
 // 设备下发命令的set主题
 const char *ALINK_TOPIC_PROP_SET = "/sys/k17hwEK9BNY/smart-H/thing/service/property/set";
 // 设备上传数据的post主题
@@ -14,7 +14,7 @@ const char *ALINK_TOPIC_PROP_CONTROL = "/k17hwEK9BNY/smart-H/user/get";
 // MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
 void mqtt_callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.printf("Message arrived in topic %s, length %d\n", topic, length);
+    Serial.printf("Message arrived in topic: %s, length %d\n", topic, length);
     Serial.print("Message:");
     for (unsigned int i = 0; i < length; i++)
     {
@@ -37,8 +37,8 @@ void MQTT::mqttSubscribe()
     if (mqttClient->connected())
     {
         // mqttClient->subscribe(ALINK_TOPIC_PROP_SET);     // 订阅设备下发的命令
-        mqttClient->subscribe(ALINK_TOPIC_PROP_POST);    // 订阅设备下发的命令
-        mqttClient->subscribe(ALINK_TOPIC_PROP_CONTROL); // 订阅用户下发的信息
+        // mqttClient->subscribe(ALINK_TOPIC_PROP_POST); // 订阅设备下发的命令
+        // mqttClient->subscribe(ALINK_TOPIC_PROP_CONTROL); // 订阅用户下发的信息
     }
 }
 void MQTT::clientReconnect() // 重连函数, 如果客户端断线,可以通过此函数重连

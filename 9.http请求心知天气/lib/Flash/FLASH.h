@@ -17,6 +17,6 @@
 // 定义config.html存储地址
 #define CONFIG_HTML_ADDR LOGIN_HTML_ADDR + 0x1000
 // 定义LogIn.html大小
-#define LOGIN_HTML_SIZE 2944 - 2
+#define LOGIN_HTML_SIZE 2948 - 2
 // 定义config.html大小
-#define CONFIG_HTML_SIZE 4139 - 2
+#define CONFIG_HTML_SIZE 4170 - 2

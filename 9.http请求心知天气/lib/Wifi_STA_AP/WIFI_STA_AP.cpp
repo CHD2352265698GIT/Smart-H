@@ -12,16 +12,16 @@ const static String LOGIN_PASSWORD = "123456"; // 登录密码
 static char Set_wifi_flag = 0;                 // 标志位，是否设置了wifi
 char sta_ssid[32] = {0};
 char sta_password[64] = {0};
-char sta_ssid_len = 0;     // 账号长度
-char sta_password_len = 0; // 密码长度
+char sta_ssid_len = 0;                  // 账号长度
+char sta_password_len = 0;              // 密码长度
+LED led;                                // 实例化LED类
+char html_Buffer[CONFIG_HTML_SIZE + 1]; // 定义一个缓冲区用于存放网页内容
 void handleRoot()
-{ // 访问主页回调函数
-    char *html_Buffer = (char *)malloc(LOGIN_HTML_SIZE + 1);
+{
+    memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                           // 清空缓冲区
     spi_flash_read(LOGIN_HTML_ADDR, (uint32_t *)html_Buffer, LOGIN_HTML_SIZE); // 读取网页内容到html_Buffer中
-    html_Buffer[LOGIN_HTML_SIZE] = '\0';                                       // 添加字符串结束符
-    esp8266_server.send(200, "text/html", html_Buffer);                        // send返回html页面
-    free(html_Buffer);                                                         // 释放html_Buffer
-    Set_wifi_flag = 0;                                                         // 重置标志位
+    esp8266_server.send(200, "text/html", html_Buffer);
+    Set_wifi_flag = 0; // 重置标志位
 }
 
 void handleConfigPost(char &flag)
@@ -32,14 +32,13 @@ void handleConfigPost(char &flag)
     {
         int angle = esp8266_server.arg("angle").toInt(); // 获取角度值
         steerMotor.write(angle);
+        Serial.printf("angle:%d\n", angle);
         delay(1000);
         // 停止脉冲
         steerMotor.detach();
-        char *html_Buffer = (char *)malloc(CONFIG_HTML_SIZE + 1);
+        memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                             // 清空缓冲区
         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
-        html_Buffer[CONFIG_HTML_SIZE] = '\0';                                        // 添加字符串结束符
-        esp8266_server.send(200, "text/html", html_Buffer);                          // 登录成功，返回登录成功页面
-        free(html_Buffer);
+        esp8266_server.send(200, "text/html", html_Buffer);                          // send返回html页面
     }
     else
     {
@@ -64,8 +63,7 @@ void handleConfigPost(char &flag)
             Serial.print("get password:");                                // 打印日志
             strcpy(sta_password, esp8266_server.arg("password").c_str()); // 将密码参数拷贝到sta_password中
             sta_password_len = strlen(sta_password);                      // 计算密码长度
-
-            Serial.println(sta_password); // 打印日志
+            Serial.println(sta_password);                                 // 打印日志
             Serial.printf("len:%d\n", (int)sta_password_len);
         }
         else
@@ -103,13 +101,11 @@ void handleRootPost()
                     Serial.println(temp_password);
                     if (temp_password == LOGIN_PASSWORD) // 判断密码是否正确
                     {
-                        char *html_Buffer = (char *)malloc(CONFIG_HTML_SIZE + 1);
+                        memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                             // 清空缓冲区
                         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
-                        html_Buffer[CONFIG_HTML_SIZE] = '\0';                                        // 添加字符串结束符
                         esp8266_server.send(200, "text/html", html_Buffer);                          // 登录成功，返回登录成功页面
-                        free(html_Buffer);
-                        Set_wifi_flag = 1;               // 设置标志位，表示已经设置了密码
-                        Serial.println("Login Success"); // 登录成功，返回登录成功页面
+                        Set_wifi_flag = 1;                                                           // 设置标志位，表示已经设置了密码
+                        Serial.println("Login Success");                                             // 登录成功，返回登录成功页面
                         return;
                     }
                     else
@@ -135,5 +131,39 @@ void handleRootPost()
             esp8266_server.send(200, "text/html", "<meta charset='UTF-8'>缺少参数 username"); // 登录失败，返回登录失败页面
             return;
         }
+    }
+}
+
+void WIFI_STA_AP::connectNewWifi()
+{
+    WiFi.setAutoConnect(true); // 设置自动连接
+    Serial.println("\n");
+    Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
+    WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
+    Serial.print("Connect to wifi");
+
+    Ticker timer1; // 实例化定时器类
+    timer1.attach_ms(250, []()
+                     { led.toggle(); Serial.print("."); }); // 每隔0.5s切换一次LED状态
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        esp8266_server.handleClient(); // 处理客户端请求
+    }
+    timer1.detach(); // 关闭定时器
+    Serial.println("\n");
+    if (WiFi.status() == WL_CONNECTED)
+    { // 如果连接上 就输出IP信息 防止未连接上break后会误输出
+        Serial.println("WIFI Connected!");
+        Serial.print("IP address: ");
+        Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
+        WiFi.mode(WIFI_STA);            // 切换回STA模式
+        for (int i = 0; i < 10; i++)    // 等待500ms
+        {
+            led.on(); // 熄灭LED
+            delay(50);
+            led.off(); // 熄灭LED
+            delay(50);
+        }
+        WifiConnectCallBack(); // 连接成功后回调函数
     }
 }

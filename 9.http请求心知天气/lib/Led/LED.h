@@ -8,6 +8,10 @@ private:
     int brightness = 0; // 定义亮度变量
     char state = 0;     // 定义状态变量
 public:
+    void toggle()
+    {
+        digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    }
     // 闪烁
     void blink(int number, int Brightness1, int Brightness2)
     {

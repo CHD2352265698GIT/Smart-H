@@ -6,7 +6,7 @@
 #include <LED.h>
 #include <FLASH.h>
 #include <STEER_MOTOR.h>
-
+#include <Ticker.h>
 extern IPAddress apIP;                  // AP模式的IP地址
 extern DNSServer dnsServer;             // DNS服务器
 extern char sta_ssid[32];               // 定义STA模式的wifi账号名
@@ -86,39 +86,6 @@ public:
         Serial.println("WebServer started!");
     }
 
-    void connectNewWifi()
-    {
-        WiFi.setAutoConnect(true); // 设置自动连接
-        Serial.println("\n");
-        Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
-        WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
-        Serial.print("Connect to wifi");
-        LED led; // 实例化LED类
-        while (WiFi.status() != WL_CONNECTED)
-        {
-            led.off();
-            delay(250);
-            led.on();
-            delay(250);
-            esp8266_server.handleClient(); // 处理http服务器访问
-            Serial.print(".");
-        }
-        Serial.println("\n");
-        if (WiFi.status() == WL_CONNECTED)
-        { // 如果连接上 就输出IP信息 防止未连接上break后会误输出
-            Serial.println("WIFI Connected!");
-            Serial.print("IP address: ");
-            Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
-            WiFi.mode(WIFI_STA);            // 切换回STA模式
-            for (int i = 0; i < 10; i++)    // 等待500ms
-            {
-                led.on(); // 熄灭LED
-                delay(50);
-                led.off(); // 熄灭LED
-                delay(50);
-            }
-            WifiConnectCallBack(); // 连接成功后回调函数
-        }
-    }
+    void connectNewWifi(); 
 };
 extern WIFI_STA_AP *p_WIFI_STA_AP; // 创建WIFI_STA_AP实例指针
