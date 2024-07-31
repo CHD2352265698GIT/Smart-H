@@ -9,7 +9,7 @@
 #include <Ticker.h>
 #include <httpclient.h>
 #include <LittleFS.h>
-
+using namespace std;
 const char *Message = "{\"LEDSwitch\":%d}";
 const char *Weatherkey = "SDpJpH-c8vI4OaOYJ"; // 心知天气key
 WIFI_STA_AP WIFI;                             // 实例化WIFI_STA_AP类
@@ -75,12 +75,5 @@ void loop()
   }
   Task1.RunTask([]()
                 { Serial.println(millis() / 1000); });
-  Task2.RunTask([]()
-                {
-                  char string[20];
-                  static int temp = 0;
-                  temp = !temp;
-                  sprintf(string, Message, temp);
-                  Emqx->mqttPublish(string); // 发布消息
-                });
+  Task2.RunTask([]() {});
 }

@@ -3,6 +3,8 @@
         "string": "cpp",
         "chrono": "cpp",
         "*.tcc": "cpp",
-        "random": "cpp"
-    }
+        "random": "cpp",
+        "cstddef": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

@@ -28,8 +28,8 @@ private:
     const int MQTT_PORT = 1883;
     const char *MQTT_USER = "admin";
     const char *MQTT_PASS = "asdfghjkl@123ABC";
-    const char *MQTT_CLIENT_ID = "esp8266";
-    const char *MQTT_TOPIC = "esp8266/led";
+    const char *MQTT_CLIENT_ID = "Bedroom_Light";
+    const char *MQTT_TOPIC = "LED_Switch";
     const char *MQTT_TOPIC_SUB = MQTT_TOPIC;
 };
 class Connect_aliyun
