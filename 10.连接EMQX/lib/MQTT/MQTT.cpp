@@ -30,6 +30,7 @@ void Connect_aliyun::clientReconnect() // 重连函数, 如果客户端断线,�
         if (connectAliyunMQTT(*mqttClient, PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET))
         {
             Serial.println("连接成功");
+            mqttSubscribe(); // 订阅主题
         }
         else
         {
@@ -84,6 +85,7 @@ Connect_Emqx::Connect_Emqx()
     PubSub.setClient(Client);
     PubSub.setServer(MQTT_SERVER, MQTT_PORT);
     PubSub.setCallback(mqtt_callback);
+    PubSub.setKeepAlive(10);
     clientReconnect();
 }
 void Connect_Emqx::clientReconnect()
@@ -94,6 +96,7 @@ void Connect_Emqx::clientReconnect()
         if (PubSub.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS))
         {
             Serial.println("连接成功");
+            mqttSubscribe(); // 订阅主题
         }
         else
         {

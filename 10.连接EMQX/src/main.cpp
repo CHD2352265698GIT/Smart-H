@@ -29,7 +29,6 @@ void WifiConnectCallBack() // WIFI连接成功回调函数
                 http_data.year, http_data.month, http_data.day, http_data.hour, http_data.minute, http_data.second);
   Emqx = new Connect_Emqx;
   Emqx->clientReconnect();     // 连接mqtt服务器
-  Emqx->mqttSubscribe();       // 订阅消息
   digitalWrite(LED_PIN, HIGH); // 关闭LED
 }
 
