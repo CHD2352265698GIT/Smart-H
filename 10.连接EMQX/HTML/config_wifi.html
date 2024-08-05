@@ -123,11 +123,13 @@
             </form>
         </div>
         <div class=" centered-div" style="margin-top: 20px;"><!-- div内容居中 -->
-            <form action='/' method="post" onsubmit="return false">
+            <form action='/' method="post">
                 <h1>舵机控制</h1>
-                <label for='angle'>旋转角度:</label>
-                <input type='text' name='angle' id='angle'><br>
-                <input type="submit" value="转动舵机" />
+                <label>开灯角度:</label>
+                <input type='text' name='on_angle' id='on_angle'><br>
+                <label>关灯角度:</label>
+                <input type='text' name='off_angle' id='off_angle'><br>
+                <input type="submit" value="保存设置" />
             </form>
         </div>
     </div>

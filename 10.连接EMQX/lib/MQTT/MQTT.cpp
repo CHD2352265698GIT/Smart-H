@@ -1,14 +1,18 @@
 #include <MQTT.h>
 
+Connect_Emqx *set;
 // MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
 void mqtt_callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.printf("Message arrived in topic: %s, length %d\n", topic, length);
-    Serial.print("Message:");
-    for (unsigned int i = 0; i < length; i++)
-    {
-        Serial.print((char)payload[i]);
-    }
+    // Serial.printf("Message arrived in topic: %s, length %d\n", topic, length);
+    // Serial.print("Message:");
+    // for (unsigned int i = 0; i < length; i++)
+    // {
+    //     Serial.print((char)payload[i]);
+    // }
+    set->LED_status = payload[0] - '0';
+    Serial.printf("LED status: %d", (int)set->LED_status);
+    set->setLed(set->LED_status); // 设置LED状态
     Serial.println("\n----------------END----------------");
 }
 WiFiClient Client;
@@ -82,6 +86,7 @@ void Connect_aliyun::mqttSubscribe()
 
 Connect_Emqx::Connect_Emqx()
 {
+    set = this;
     PubSub.setClient(Client);
     PubSub.setServer(MQTT_SERVER, MQTT_PORT);
     PubSub.setCallback(mqtt_callback);

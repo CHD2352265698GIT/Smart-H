@@ -12,6 +12,11 @@
 #define WIFI_SSID_LEN_ADDR FLASH_BASE_ADDR + 0x00
 // 定义wifi密码长度地址
 #define WIFI_PWD_LEN_ADDR FLASH_BASE_ADDR + 0x01
+// 定义舵机所在扇区地址
+#define WIFI_MOTOR_SECTOR_ADDR FLASH_PAGE + 0x01
+// 定义舵机转动角度地址
+#define WIFI_MOTOR_ANGLE_ADDR FLASH_BASE_ADDR + 0x1000
+
 // 定义LogIn.html存储地址
 #define LOGIN_HTML_ADDR FLASH_BASE_ADDR + 0x10000
 // 定义config.html存储地址
@@ -19,4 +24,4 @@
 // 定义LogIn.html大小
 #define LOGIN_HTML_SIZE 2948 - 2
 // 定义config.html大小
-#define CONFIG_HTML_SIZE 4170 - 2
+#define CONFIG_HTML_SIZE 4262 - 2

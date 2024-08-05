@@ -13,16 +13,15 @@ public:
         digitalWrite(LED_PIN, !digitalRead(LED_PIN));
     }
     // 闪烁
-    void blink(int number, int Brightness1, int Brightness2)
+    void blink(int number)
     {
-        for (int i = 0; i < number; i++)
+        for (int i = 0; i < number; i++) // 等待500ms
         {
-            setBrightness(Brightness1);
-            delay(200);
-            setBrightness(Brightness2);
-            delay(200);
+            on(); // 熄灭LED
+            delay(50);
+            off(); // 熄灭LED
+            delay(50);
         }
-        setBrightness(255);
     }
     void on()
     {
@@ -66,3 +65,4 @@ public:
         }
     }
 };
+extern LED led; // 实例化LED类

@@ -23,6 +23,8 @@ private:
     const byte DNS_PORT = 53;        // DNS端口号
     const char *AP_NAME = "smart-H"; // wifi名字
 public:
+    char on_value = 0;
+    char off_value = 0;
     void (*WifiConnectCallBack)(void);
     void Write_WIFI_STA_AP_Config()
     {
@@ -86,6 +88,6 @@ public:
         Serial.println("WebServer started!");
     }
 
-    void connectNewWifi(); 
+    void connectNewWifi();
 };
 extern WIFI_STA_AP *p_WIFI_STA_AP; // 创建WIFI_STA_AP实例指针

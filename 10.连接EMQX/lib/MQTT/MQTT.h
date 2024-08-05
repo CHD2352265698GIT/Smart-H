@@ -6,13 +6,14 @@
 #include <PubSubClient.h>
 #include <aliyun_mqtt.h>
 #include <ArduinoJson.h>
+#include <STEER_MOTOR.h>
 
 #define LED_B 2 // 定义LED灯的引脚
 extern const char *Message;
 extern void mqtt_callback(char *topic, byte *payload, unsigned int length); // 回调函数
 extern WiFiClient Client;
 
-class Connect_Emqx
+class Connect_Emqx : public STEER_MOTOR
 {
 public:
     Connect_Emqx();
@@ -21,7 +22,7 @@ public:
     void mqttSubscribe();                  // mqtt订阅post消息(上传数据)
     PubSubClient *getMQTTClient();
     WiFiClient *getWiFiClient();
-
+    bool LED_status; // 灯的状态
 private:
     const char *name = "emqx";
     const char *MQTT_SERVER = "114.132.176.197";

@@ -28,32 +28,20 @@ void WifiConnectCallBack() // WIFI连接成功回调函数
   Serial.printf("%d年%d月%d日 %d:%d:%d\n",
                 http_data.year, http_data.month, http_data.day, http_data.hour, http_data.minute, http_data.second);
   Emqx = new Connect_Emqx;
+  char motorvalue[2];
+  spi_flash_read(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)motorvalue, 2); // 读取舵机角度
+  Emqx->setOnValue(motorvalue[0]);
+  Emqx->setOffValue(motorvalue[1]);
+  Serial.printf("On:%d,Off:%d\n", (int)motorvalue[0], (int)motorvalue[1]);
   Emqx->clientReconnect();     // 连接mqtt服务器
+  led.blink(8);                // LED闪烁
   digitalWrite(LED_PIN, HIGH); // 关闭LED
 }
 
 void setup()
 {
-  p_WIFI_STA_AP = &WIFI; // 保存WIFI_STA_AP类的指针
-  Serial.begin(115200);  // 设置串口波特率
-  // LittleFS.format();     // 格式化SPIFFS
-  Serial.println("SPIFFS format finish");
-  if (LittleFS.begin())
-  { // 启动SPIFFS
-    Serial.println("SPIFFS Started.");
-  }
-  else
-  {
-    Serial.println("SPIFFS Failed to Start.");
-  }
-  File dataFile = LittleFS.open("/notes.txt", "r"); // 建立File对象用于向SPIFFS中的file对象（即/notes.txt）写入信息
-  if (dataFile)                                     // 判断文件是否成功打开
-  {
-    // 读取文件内容并且通过串口监视器输出文件信息
-    Serial.print(dataFile.readString());
-    Serial.printf("大小：%d Byte\n", dataFile.size());
-    dataFile.close(); // 完成文件写入后关闭文件
-  }
+  p_WIFI_STA_AP = &WIFI;                          // 保存WIFI_STA_AP类的指针
+  Serial.begin(115200);                           // 设置串口波特率
   WIFI.WifiConnectCallBack = WifiConnectCallBack; // 设置WIFI连接回调函数
   WIFI.initSoftAP_STA();                          // 初始化WIFI SoftAP模式
   WIFI.initWebServer();                           // 初始化WIFI WebServer

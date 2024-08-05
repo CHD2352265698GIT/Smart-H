@@ -14,7 +14,6 @@ char sta_ssid[32] = {0};
 char sta_password[64] = {0};
 char sta_ssid_len = 0;                  // 账号长度
 char sta_password_len = 0;              // 密码长度
-LED led;                                // 实例化LED类
 char html_Buffer[CONFIG_HTML_SIZE + 1]; // 定义一个缓冲区用于存放网页内容
 void handleRoot()
 {
@@ -28,14 +27,21 @@ void handleConfigPost(char &flag)
 {
     // Post回调函数,检查是否有账号密码参数
     Serial.println("handleConfigPost");
-    if (esp8266_server.hasArg("angle"))
+    if (esp8266_server.hasArg("on_angle"))
     {
-        int angle = esp8266_server.arg("angle").toInt(); // 获取角度值
-        steerMotor.write(angle);
-        Serial.printf("angle:%d\n", angle);
-        delay(1000);
-        // 停止脉冲
-        steerMotor.detach();
+        // 处理角度值
+        int angle = esp8266_server.arg("on_angle").toInt(); // 获取角度值
+        p_WIFI_STA_AP->on_value = angle;                    // 调用on_value函数
+        angle = esp8266_server.arg("off_angle").toInt();    // 获取角度值
+        p_WIFI_STA_AP->off_value = angle;                   // 调用off_value函数
+        // 存储角度值到flash
+        spi_flash_erase_sector(WIFI_MOTOR_SECTOR_ADDR); // 先擦除flash扇区
+        char temp_buffer[4];
+        temp_buffer[0] = p_WIFI_STA_AP->on_value;
+        temp_buffer[1] = p_WIFI_STA_AP->off_value;
+        spi_flash_write(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)temp_buffer, 4); // 写入on_value到flash
+        spi_flash_read(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)temp_buffer, 2);  // 读取舵机角度
+        Serial.printf("On:%d,Off:%d\n", (int)temp_buffer[0], (int)temp_buffer[1]);
         memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                             // 清空缓冲区
         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
         esp8266_server.send(200, "text/html", html_Buffer);                          // send返回html页面
@@ -138,7 +144,7 @@ void WIFI_STA_AP::connectNewWifi()
 {
     WiFi.setAutoConnect(true); // 设置自动连接
     Serial.println("\n");
-    Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
+    // Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
     WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
     Serial.print("Connect to wifi");
 
@@ -157,13 +163,7 @@ void WIFI_STA_AP::connectNewWifi()
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP()); // 打印esp8266的IP地址
         WiFi.mode(WIFI_STA);            // 切换回STA模式
-        for (int i = 0; i < 10; i++)    // 等待500ms
-        {
-            led.on(); // 熄灭LED
-            delay(50);
-            led.off(); // 熄灭LED
-            delay(50);
-        }
-        WifiConnectCallBack(); // 连接成功后回调函数
+        led.blink(6);                   // 闪烁6次LED
+        WifiConnectCallBack();          // 连接成功后回调函数
     }
 }
