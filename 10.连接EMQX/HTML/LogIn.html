@@ -69,7 +69,6 @@
         form input[type='text'],
         form input[type='submit'] {
             width: 100%;
-
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
@@ -78,7 +77,6 @@
         }
 
         form input[type='submit'] {
-            height: 5%;
             background-color: #007BFF;
             color: white;
             border: none;
@@ -99,37 +97,16 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>ESP8266 仪表盘</h1>
-        <p style="text-align: center;">欢迎来到ESP8266的仪表盘，这里将显示ESP8266的相关信息!</p>
-        <div class=" centered-div" style="margin-top: 30px;"><!-- div内容居中 -->
-            <form name='input' action='/' method='POST'>
-                <h1>网络设置</h1>
-                <label for='ssid'>WiFi名称:</label>
-                <input type='text' name='ssid' id='ssid'><br>
-                <label for='password'>WiFi密码:</label>
-                <input type='text' name='password' id='password'><br>
-                <input type='submit' value='保存'>
-            </form>
-        </div>
-        <div class=" centered-div" style="margin-top: 20px;"><!-- div内容居中 -->
-            <form name='input' action='/' method='POST'>
-                <h1>登录密码设置</h1>
-                <label for='signer_ssid'>登录名称:</label>
-                <input type='text' name='signer_ssid' id='signer_ssid'><br>
-                <label for='signer_password'>密码:</label>
-                <input type='text' name='signer_password' id='signer_password'><br>
-                <input type='submit' value='保存'>
-            </form>
-        </div>
-        <div class=" centered-div" style="margin-top: 20px;"><!-- div内容居中 -->
-            <form action='/' method="post" onsubmit="return false">
-                <h1>舵机控制</h1>
-                <label for='angle'>旋转角度:</label>
-                <input type='text' name='angle' id='angle'><br>
-                <input type="submit" value="转动舵机" />
-            </form>
-        </div>
+
+    <div class=" centered-div" style="margin-top: 30px;"><!-- div内容居中 -->
+        <form name='input' action='/' method='POST'>
+            <h1>登录账号</h1>
+            <label for='username'>用户名:</label>
+            <input type='text' name='username' id='username'><br>
+            <label for='userpassword'>密码:</label>
+            <input type='text' name='userpassword' id='userpassword'><br>
+            <input type='submit' value='登录'>
+        </form>
     </div>
 </body>
 

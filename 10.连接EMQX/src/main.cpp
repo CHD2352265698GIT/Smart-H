@@ -9,11 +9,11 @@
 #include <Ticker.h>
 #include <httpclient.h>
 #include <LittleFS.h>
-
+using namespace std;
 const char *Message = "{\"LEDSwitch\":%d}";
 const char *Weatherkey = "SDpJpH-c8vI4OaOYJ"; // 心知天气key
 WIFI_STA_AP WIFI;                             // 实例化WIFI_STA_AP类
-MQTT *aliyu;
+Connect_Emqx *Emqx;
 Ticker timer1;
 Timer_Task Task1(1);
 Timer_Task Task2(30);
@@ -27,10 +27,8 @@ void WifiConnectCallBack() // WIFI连接成功回调函数
   httptime Gettime(&Client, http_data); // 获取时间
   Serial.printf("%d年%d月%d日 %d:%d:%d\n",
                 http_data.year, http_data.month, http_data.day, http_data.hour, http_data.minute, http_data.second);
-  aliyu = new MQTT;
-  aliyu->clientReconnect();    // 连接mqtt服务器
-  aliyu->mqttSubscribe();      // 订阅消息
-  aliyu->mqttPublish(Message); // 发布消息
+  Emqx = new Connect_Emqx;
+  Emqx->clientReconnect();     // 连接mqtt服务器
   digitalWrite(LED_PIN, HIGH); // 关闭LED
 }
 
@@ -67,21 +65,14 @@ void setup()
 
 void loop()
 {
-  aliyu->getMQTTClient()->loop();           // mqtt客户端监听
-  if (!aliyu->getMQTTClient()->connected()) // 看mqtt连接了没
+  Emqx->getMQTTClient()->loop();           // mqtt客户端监听
+  if (!Emqx->getMQTTClient()->connected()) // 看mqtt连接了没
   {
     Serial.println("mqtt disconnected!Try reconnect now...");
-    Serial.println(aliyu->getMQTTClient()->state());
-    aliyu->clientReconnect();
+    Serial.println(Emqx->getMQTTClient()->state());
+    Emqx->clientReconnect();
   }
   Task1.RunTask([]()
                 { Serial.println(millis() / 1000); });
-  Task2.RunTask([]()
-                {
-                  char string[20];
-                  static int temp = 0;
-                  temp = !temp;
-                  sprintf(string, Message, temp);
-                  aliyu->mqttPublish(string); // 发布消息
-                });
+  Task2.RunTask([]() {});
 }

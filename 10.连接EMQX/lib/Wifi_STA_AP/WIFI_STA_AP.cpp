@@ -30,7 +30,6 @@ void handleConfigPost(char &flag)
     Serial.println("handleConfigPost");
     if (esp8266_server.hasArg("angle"))
     {
-        steerMotor.attach(2, 500, 2500);                 // 修正脉冲宽度                                             // 如果有angle参数
         int angle = esp8266_server.arg("angle").toInt(); // 获取角度值
         steerMotor.write(angle);
         Serial.printf("angle:%d\n", angle);
