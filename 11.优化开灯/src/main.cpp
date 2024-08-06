@@ -20,13 +20,6 @@ Timer_Task Task2(30);
 httpclientData http_data;
 void WifiConnectCallBack() // WIFI连接成功回调函数
 {
-  weather XinZhi(&Client);                                 // 心知天气
-  XinZhi.weatherRequest(Weatherkey, "chengdu", http_data); // 发送天气请求
-  Serial.printf("地址：成都; 天气：%s; 温度：%d摄氏度; \n",
-                http_data.weather_txt.c_str(), http_data.temperature);
-  httptime Gettime(&Client, http_data); // 获取时间
-  Serial.printf("%d年%d月%d日 %d:%d:%d\n",
-                http_data.year, http_data.month, http_data.day, http_data.hour, http_data.minute, http_data.second);
   Emqx = new Connect_Emqx;
   char motorvalue[2];
   spi_flash_read(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)motorvalue, 2); // 读取舵机角度
