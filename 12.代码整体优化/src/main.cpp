@@ -10,25 +10,25 @@
 #include <httpclient.h>
 #include <LittleFS.h>
 using namespace std;
-const char *Message = "{\"LEDSwitch\":%d}";
+const char *Message = "{\"LEDSwitch\":%d}";   // 发送消息格式
 const char *Weatherkey = "SDpJpH-c8vI4OaOYJ"; // 心知天气key
 WIFI_STA_AP WIFI;                             // 实例化WIFI_STA_AP类
-Connect_Emqx *Emqx;
-Ticker timer1;
-Timer_Task Task1(1);
-Timer_Task Task2(30);
-httpclientData http_data;
-void WifiConnectCallBack() // WIFI连接成功回调函数
+Connect_Emqx *Emqx;                           // 实例化Connect_Emqx类
+Ticker timer1;                                // 实例化Ticker类
+Timer_Task Task1(1);                          // 实例化Timer_Task类
+Timer_Task Task2(10);                         // 实例化Timer_Task类
+httpclientData http_data;                     // 实例化httpclientData类
+void WifiConnectCallBack()                    // WIFI连接成功回调函数
 {
-  Emqx = new Connect_Emqx;
-  char motorvalue[2];
-  spi_flash_read(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)motorvalue, 2); // 读取舵机角度
-  Emqx->setOnValue((int)motorvalue[0]);
-  Emqx->setOffValue((int)motorvalue[1]);
-  Serial.printf("On:%d,Off:%d\n", (int)motorvalue[0], (int)motorvalue[1]);
-  Emqx->clientReconnect();     // 连接mqtt服务器
-  led.blink(8);                // LED闪烁
-  digitalWrite(LED_PIN, HIGH); // 关闭LED
+  Emqx = new Connect_Emqx;                                                 // 实例化Connect_Emqx类
+  char motorvalue[2];                                                      // 临时保存舵机角度
+  spi_flash_read(WIFI_MOTOR_ANGLE_ADDR, (uint32_t *)motorvalue, 2);        // 读取舵机角度
+  Emqx->setOnValue((int)motorvalue[0]);                                    // 设置mqtt消息中的舵机角度
+  Emqx->setOffValue((int)motorvalue[1]);                                   // 设置mqtt消息中的舵机角度
+  Serial.printf("On:%d,Off:%d\n", (int)motorvalue[0], (int)motorvalue[1]); // 打印舵机角度
+  Emqx->clientReconnect();                                                 // 连接mqtt服务器
+  led.blink(8);                                                            // LED闪烁，8次
+  digitalWrite(LED_PIN, HIGH);                                             // 关闭LED
 }
 
 void setup()
@@ -41,19 +41,23 @@ void setup()
   pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
   WIFI.connectNewWifi();                          // 连接WIFI
   timer1.attach(1, []()
-                {Task1.Run();Task2.Run(); }); // 定时器1，每7秒执行一次
+                {Task1.Run();Task2.Run(); }); // 定时器1，中断时间为1秒
 }
 
 void loop()
 {
-  Emqx->getMQTTClient()->loop();           // mqtt客户端监听
-  if (!Emqx->getMQTTClient()->connected()) // 看mqtt连接了没
-  {
-    Serial.println("mqtt disconnected!Try reconnect now...");
-    Serial.println(Emqx->getMQTTClient()->state());
-    Emqx->clientReconnect();
-  }
+  // mqtt客户端监听
+  Emqx->getMQTTClient()->loop();
+  // Task1任务，每秒打印一次时间
   Task1.RunTask([]()
                 { Serial.println(millis() / 1000); });
-  Task2.RunTask([]() {});
+  // Task2任务，每10秒执行一次
+  Task2.RunTask([]()
+                {
+                  if (!Emqx->getMQTTClient()->connected()) // 检查mqtt是否断开连接
+                    {
+                      Serial.println("mqtt disconnected!Try reconnect now..."); // 打印mqtt断开连接
+                      Serial.println(Emqx->getMQTTClient()->state());           // 打印mqtt连接状态
+                      Emqx->clientReconnect();                                  // 重新连接mqtt服务器
+                    } });
 }

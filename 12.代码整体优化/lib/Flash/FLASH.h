@@ -16,7 +16,6 @@
 #define WIFI_MOTOR_SECTOR_ADDR FLASH_PAGE + 0x01
 // 定义舵机转动角度地址
 #define WIFI_MOTOR_ANGLE_ADDR FLASH_BASE_ADDR + 0x1000
-
 // 定义LogIn.html存储地址
 #define LOGIN_HTML_ADDR FLASH_BASE_ADDR + 0x10000
 // 定义config.html存储地址
