@@ -1,16 +1,15 @@
 #include <MQTT.h>
 
-Connect_Emqx *set;          // 创建一个全局指针，指向Connect_Emqx类
-static WiFiClient Client;   // 创建网络连接客户端
-static PubSubClient PubSub; // 创建mqtt连接客户端
-// MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
-void mqtt_callback(char *topic, byte *payload, unsigned int length)
+Connect_Emqx *set;                                                  // 创建一个全局指针，指向Connect_Emqx类
+static WiFiClient Client;                                           // 创建网络连接客户端
+static PubSubClient PubSub;                                         // 创建mqtt连接客户端
+void mqtt_callback(char *topic, byte *payload, unsigned int length) // MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
 {
-    Serial.println("\n----------------START----------------");
-    set->LED_status = payload[0] - '0';
-    Serial.printf("LED status: %d", (int)set->LED_status);
-    set->setLed(set->LED_status); // 设置LED状态
-    Serial.println("\n----------------END----------------");
+    Serial.println("----------------START----------------"); // 打印开始
+    set->LED_status = payload[0] - '0';                      // 获取LED状态
+    Serial.printf("LED status: %d", (int)set->LED_status);   // 打印LED状态
+    set->setLed(set->LED_status);                            // 设置LED状态
+    Serial.println("----------------END----------------");   // 打印结束
 }
 Connect_aliyun::Connect_aliyun()
 {
@@ -24,42 +23,40 @@ void Connect_aliyun::clientReconnect() // 重连函数, 如果客户端断线,�
 {
     while (mqttClient->connected() == false) // 连接mqtt服务器
     {
-        Serial.printf("connected %s MQTT\n", name);
-        if (connectAliyunMQTT(*mqttClient, PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET))
+        Serial.printf("connected %s MQTT\n", name);                                  // 打印连接信息
+        if (connectAliyunMQTT(*mqttClient, PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET)) // 连接mqtt服务器，产品密钥、设备名称、设备密钥，通过阿里云控制台获取
         {
-            Serial.println("连接成功");
-            mqttSubscribe(); // 订阅主题
+            Serial.println("连接成功"); // 打印连接成功
+            mqttSubscribe();            // 订阅主题
         }
         else
         {
-            Serial.println("failed");
-            Serial.println(mqttClient->state());
-            Serial.println("try again in 5 sec");
-            for (int i = 0; i < 10; i++)
+            Serial.println("failed");             // 打印连接失败
+            Serial.println(mqttClient->state());  // 打印连接失败原因
+            Serial.println("try again in 5 sec"); // 打印重连信息
+            for (int i = 0; i < 10; i++)          // 每隔0.5秒打印一个点，表示正在重连，5秒重新连接一次服务器
             {
-                delay(500);
-                Serial.println('.');
+                delay(500);          // 延时0.5秒
+                Serial.println('.'); // 打印一个点
             }
         }
     }
 }
 void Connect_aliyun::mqttPublish(const char *Message) // mqtt发布post消息(上传数据)
 {
-    if (mqttClient->connected())
+    if (mqttClient->connected()) // 如果mqtt客户端连接成功,则发布post消息
     {
-        // 先拼接出json字符串
-        char jsonBuf[128];
+        char jsonBuf[128]; // 先拼接出json字符串
         postMsgId += 1;
-        sprintf(jsonBuf, ALINK_BODY_FORMAT, postMsgId, ALINK_METHOD_PROP_POST, Message);
-        // 再从mqtt客户端中发布post消息
-        if (mqttClient->publish(ALINK_TOPIC_PROP_POST, jsonBuf))
+        sprintf(jsonBuf, ALINK_BODY_FORMAT, postMsgId, ALINK_METHOD_PROP_POST, Message); // 拼接json字符串
+        if (mqttClient->publish(ALINK_TOPIC_PROP_POST, jsonBuf))                         // 再从mqtt客户端中发布post消息
         {
-            Serial.print("Post message to cloud: ");
-            Serial.println(jsonBuf);
+            Serial.print("Post message to cloud: "); // 打印上传数据
+            Serial.println(jsonBuf);                 //  要发布的消息
         }
         else
         {
-            Serial.println("Publish message to cloud failed!");
+            Serial.println("Publish message to cloud failed!"); // 打印上传数据失败
         }
     }
 }

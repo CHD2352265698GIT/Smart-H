@@ -18,7 +18,7 @@ void STEER_MOTOR::setAngle(int angle) // 设置舵机转动角度
 }
 void STEER_MOTOR::setLed(char on) // 设置LED状态
 {
-    if (!on) // 判断是否打开
+    if (on) // 判断是否打开
     {
         setAngle((int)OnValue);     // 转到OnValue角度
         Serial.println("LIGHT-ON"); // 打印打开灯
