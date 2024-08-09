@@ -6,11 +6,11 @@ static PubSubClient PubSub; // 创建mqtt连接客户端
 // MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
 void mqtt_callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.println("\n----------------START----------------");
+    Serial.println("----------------START----------------");
     set->LED_status = payload[0] - '0';
     Serial.printf("LED status: %d", (int)set->LED_status);
     set->setLed(set->LED_status); // 设置LED状态
-    Serial.println("\n----------------END----------------");
+    Serial.println("----------------END----------------");
 }
 Connect_aliyun::Connect_aliyun()
 {
