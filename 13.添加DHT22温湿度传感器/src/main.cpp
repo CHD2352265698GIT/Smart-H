@@ -71,11 +71,10 @@ void loop()
                   char error = 0;                       // 读取温湿度数据 错误码
                   error = dht->readData();              // 读取温湿度数据
                   if (error == 0)
-                    dht->printData(); // 打印温湿度数据
+                    Serial.printf("温度:%.1f 湿度:%.1f\n", dht->getTemperature(), dht->getHumidity()); // 打印温湿度数据
                   else
                   {
-                    Serial.printf("read data error! %d\n", error); // 打印读取数据错误
-                    dht->printData();                              // 打印温湿度数据
+                    Serial.println(dht->ErrorData()); // 打印错误信息
                   }
                   delete dht; // 释放内存
                 });
