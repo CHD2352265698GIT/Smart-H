@@ -43,8 +43,7 @@ void setup()
   pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
   WIFI.connectNewWifi();                          // 连接WIFI
   timer1.attach(1, []()
-                {Task1.Run();Task2.Run(); 
-                Task3.Run(); }); // 定时器1，中断时间为1秒
+                {Task1.Run();Task2.Run();Task3.Run(); }); // 定时器1，中断时间为1秒
 }
 
 void loop()
@@ -70,7 +69,7 @@ void loop()
                   Serial.printf("引脚:%d  ", dht->pin); // 打印引脚号
                   if (!dht->readData())                 // 读取温湿度数据
                   {
-                    Emqx->mqttPublish(Emqx->MQTT_TOPIC_DHT_STATE, "online");
+                    Emqx->mqttPublish(Emqx->MQTT_TOPIC_DHT_STATE, "online");                             // 发布dht在线状态到mqtt服务器
                     Serial.printf("温度:%.1f 湿度:%.1f%%\n", dht->getTemperature(), dht->getHumidity()); // 打印温湿度数据
                     char dhtData[20];                                                                    // 定义一个字符数组，用于存储温湿度数据
                     sprintf(dhtData, "{\"temperature\":%.1f}", dht->getTemperature());                   // 将温度数据格式化为字符串
@@ -80,8 +79,8 @@ void loop()
                   }
                   else
                   {
-                    Emqx->mqttPublish(Emqx->MQTT_TOPIC_DHT_STATE, "offline");
-                    Serial.println(dht->ErrorData()); // 打印错误信息
+                    Emqx->mqttPublish(Emqx->MQTT_TOPIC_DHT_STATE, "offline"); // 发布dht离线状态到mqtt服务器
+                    Serial.println(dht->ErrorData());                         // 打印错误信息
                   }
                   delete dht; // 释放内存
                 });
