@@ -66,7 +66,7 @@ void loop()
   // Task3任务，每30秒执行一次
   Task3.RunTask([]()
                 {
-                  DHT22 *dht = new DHT22;               // 实例化DHT22类
+                  DHT22 *dht = new DHT22(0);            // 实例化DHT22类
                   Serial.printf("引脚:%d  ", dht->pin); // 打印引脚号
                   if (!dht->readData())                 // 读取温湿度数据
                   {
