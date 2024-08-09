@@ -73,7 +73,10 @@ void loop()
                   if (error == 0)
                     dht->printData(); // 打印温湿度数据
                   else
+                  {
                     Serial.printf("read data error! %d\n", error); // 打印读取数据错误
-                  delete dht;                                      // 释放内存
+                    dht->printData();                              // 打印温湿度数据
+                  }
+                  delete dht; // 释放内存
                 });
 }

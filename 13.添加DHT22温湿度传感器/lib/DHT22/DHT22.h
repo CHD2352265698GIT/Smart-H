@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#define DHT22_PIN 0 // DHT22数据引脚连接到ESP8266的GPIO0
+#define DHT22_PIN 2 // DHT22数据引脚连接到ESP8266的GPIO0
 
 class DHT22
 {

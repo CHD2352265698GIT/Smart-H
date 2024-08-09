@@ -5,7 +5,6 @@ unsigned char DHT22::ReadByte() // 读取一个字节
     unsigned int cnt = 0;       // 计数器
     char temp = 0;              // 临时变量
     unsigned char Data = 0x00;  // 数据变量
-    pinMode(pin, INPUT);        // 设置为输入模式
     for (int i = 0; i < 8; i++) // 8位数据
     {
         while (!READPIN) // 检测上次低电平是否结束
@@ -15,7 +14,7 @@ unsigned char DHT22::ReadByte() // 读取一个字节
                 break; // 退出循环
             }
         }
-        delayMicroseconds(30); // 延时30us
+        delayMicroseconds(2); // 延时30us
         temp = 0;
         if (READPIN) // 如果为高电平
         {
@@ -36,14 +35,15 @@ unsigned char DHT22::ReadByte() // 读取一个字节
 }
 char DHT22::readData() // 读取数据
 {
-    unsigned int cnt = 0;    // 计数器
-    pinMode(pin, OUTPUT);    // 设置为输出模式
-    digitalWrite(pin, LOW);  // 发送低电平
-    delay(10);               // 延时2ms
-    digitalWrite(pin, HIGH); // 发送高电平
-    delayMicroseconds(20);   // 延时30us
-    pinMode(pin, INPUT);     // 设置为输入模式
-    if (!READPIN)            // 如果为低电平
+    unsigned int cnt = 0;          // 计数器
+    memset(Data, 0, sizeof(Data)); // 清空数据
+    pinMode(pin, OUTPUT);          // 设置为输出模式
+    digitalWrite(pin, LOW);        // 发送低电平
+    delay(2);                      // 延时2ms
+    digitalWrite(pin, HIGH);       // 发送高电平
+    pinMode(pin, INPUT);           // 设置为输入模式
+    delayMicroseconds(20);         // 延时30us
+    if (!READPIN)                  // 如果为低电平
     {
         while (!READPIN) // 检测上次低电平是否结束
         {
