@@ -38,12 +38,12 @@ void setup()
   p_WIFI_STA_AP = &WIFI;                          // 保存WIFI_STA_AP类的指针
   Serial.begin(115200);                           // 设置串口波特率
   WIFI.WifiConnectCallBack = WifiConnectCallBack; // 设置WIFI连接回调函数
-  // WIFI.initSoftAP_STA();                          // 初始化WIFI SoftAP模式
-  // WIFI.initWebServer();                           // 初始化WIFI WebServer
-  // pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
-  // WIFI.connectNewWifi();                          // 连接WIFI
+  WIFI.initSoftAP_STA();                          // 初始化WIFI SoftAP模式
+  WIFI.initWebServer();                           // 初始化WIFI WebServer
+  pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
+  WIFI.connectNewWifi();                          // 连接WIFI
   timer1.attach(1, []()
-                {Task1.Run();//Task2.Run(); 
+                {Task1.Run();Task2.Run(); 
                 Task3.Run(); }); // 定时器1，中断时间为1秒
 }
 
@@ -71,7 +71,7 @@ void loop()
                   char error = 0;                       // 读取温湿度数据 错误码
                   error = dht->readData();              // 读取温湿度数据
                   if (error == 0)
-                    Serial.printf("温度:%.1f 湿度:%.1f\n", dht->getTemperature(), dht->getHumidity()); // 打印温湿度数据
+                    Serial.printf("温度:%.1f℃ 湿度:%.1f%%\n", dht->getTemperature(), dht->getHumidity()); // 打印温湿度数据
                   else
                   {
                     Serial.println(dht->ErrorData()); // 打印错误信息

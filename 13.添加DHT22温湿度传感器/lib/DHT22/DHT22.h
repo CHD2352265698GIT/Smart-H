@@ -3,6 +3,7 @@
 class DHT22
 {
 public:
+#define DHT22_PIN 2                // DHT22数据默认引脚
     DHT22(uint8_t pin = DHT22_PIN) // 构造函数
     {
         this->pin = pin;
@@ -13,7 +14,6 @@ public:
     char readData();         // 读取数据
     uint8_t pin;             // 数据引脚
 private:
-#define DHT22_PIN 2                    // DHT22数据默认引脚
 #define READPIN digitalRead(this->pin) // 读取引脚电平
     char symbol = 0;                   // 符号位
     char errorNumber = 0;              // 错误码

@@ -123,7 +123,7 @@ static void handleRootPost() // Post回调函数,检查是否有账号密码参�
             }
             else
             {
-                esp8266_server.send(200, "text/html", error_message + "无该账号</h1>"); // 登录失败，返回登录失败页面
+                esp8266_server.send(200, "text/html", error_message += "无该账号</h1>"); // 登录失败，返回登录失败页面
                 return;
             }
         }
