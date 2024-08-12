@@ -10,16 +10,17 @@
 #include <httpclient.h>
 #include <LittleFS.h>
 #include <DHT22.h>
+#include <ESP8266WiFiGeneric.h>
 using namespace std;
 const char *Message = "{\"LEDSwitch\":%d}";   // 发送消息格式
 const char *Weatherkey = "SDpJpH-c8vI4OaOYJ"; // 心知天气key
 WIFI_STA_AP WIFI;                             // 实例化WIFI_STA_AP类
 Connect_Emqx *Emqx;                           // 实例化Connect_Emqx类
+httpclientData http_data;                     // 实例化httpclientData类
 Ticker timer1;                                // 实例化Ticker类
 Timer_Task Task1(1, ON);                      // 实例化Timer_Task类
 Timer_Task Task2(10, OFF);                    // 实例化Timer_Task类
 Timer_Task Task3(30, ON);                     // 实例化Timer_Task类
-httpclientData http_data;                     // 实例化httpclientData类
 void WifiConnectCallBack()                    // WIFI连接成功回调函数
 {
   Emqx = new Connect_Emqx;                                                 // 实例化Connect_Emqx类
@@ -44,6 +45,11 @@ void setup()
   WIFI.connectNewWifi();                          // 连接WIFI
   timer1.attach(1, []()
                 {Task1.Run();Task2.Run();Task3.Run(); }); // 定时器1，中断时间为1秒
+  wifi_set_sleep_type(LIGHT_SLEEP_T);          // 设置WIFI为轻睡眠模式
+  if (WiFi.setSleepMode(WIFI_LIGHT_SLEEP) == false) // 设置WIFI为轻睡眠模式
+  {
+    Serial.println("设置WIFI为轻睡眠模式失败");
+  }
 }
 
 // 主循环
