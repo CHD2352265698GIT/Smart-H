@@ -20,7 +20,7 @@ httpclientData http_data;                     // 实例化httpclientData类
 Ticker timer1;                                // 实例化Ticker类
 Timer_Task Task1(1, ON);                      // 实例化Timer_Task类
 Timer_Task Task2(10, OFF);                    // 实例化Timer_Task类
-Timer_Task Task3(30, ON);                     // 实例化Timer_Task类
+Timer_Task Task3(2400, ON);                   // 实例化Timer_Task类
 void WifiConnectCallBack()                    // WIFI连接成功回调函数
 {
   Emqx = new Connect_Emqx;                                                 // 实例化Connect_Emqx类
@@ -44,19 +44,15 @@ void setup()
   pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
   WIFI.connectNewWifi();                          // 连接WIFI
   timer1.attach(1, []()
-                {Task1.Run();Task2.Run();Task3.Run(); }); // 定时器1，中断时间为1秒
-  wifi_set_sleep_type(LIGHT_SLEEP_T);          // 设置WIFI为轻睡眠模式
-  if (WiFi.setSleepMode(WIFI_LIGHT_SLEEP) == false) // 设置WIFI为轻睡眠模式
-  {
-    Serial.println("设置WIFI为轻睡眠模式失败");
-  }
+                {Task1.Run();Task2.Run();Task3.Run(); });                        // 定时器1，中断时间为1秒
+  WiFi.setSleepMode(WIFI_LIGHT_SLEEP, true); // 设置WIFI睡眠模式为轻度睡眠
 }
 
 // 主循环
 void loop()
 {
-  // mqtt客户端监听
-  Emqx->getMQTTClient()->loop();
+
+  Emqx->getMQTTClient()->loop(); //  mqtt客户端监听
   // Task1任务，每秒打印一次时间
   Task1.RunTask([]()
                 { Serial.println(millis() / 1000); });
@@ -69,7 +65,7 @@ void loop()
                       Serial.println(Emqx->getMQTTClient()->state());           // 打印mqtt连接状态
                       Emqx->clientReconnect();                                  // 重新连接mqtt服务器
                     } });
-  // Task3任务，每30秒执行一次
+  // Task3任务，每40分钟执行一次
   Task3.RunTask([]()
                 {
                   DHT22 *dht = new DHT22(0);            // 实例化DHT22类
