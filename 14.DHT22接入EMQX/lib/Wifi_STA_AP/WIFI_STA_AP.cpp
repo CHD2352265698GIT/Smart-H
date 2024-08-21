@@ -6,8 +6,8 @@ static DNSServer dnsServer;                           // 创建dnsServer实例
 static ESP8266WebServer esp8266_server(80);           // 建立ESP8266WebServer对象，对象名称为esp8266_server
                                                       // 括号中的数字是网路服务器响应http请求的端口号
                                                       // 网络服务器标准http端口号为80，因此这里使用80为端口号
-const static String LOGIN_USERNAME = "admin";         // 登录用户名
-const static String LOGIN_PASSWORD = "123456";        // 登录密码
+String LOGIN_USERNAME = "admin";                      // 登录用户名
+String LOGIN_PASSWORD = "123456";                     // 登录密码
 static char Set_wifi_flag = 0;                        // 标志位，是否设置了wifi
 static char sta_ssid[32] = {0};                       // 账号
 static char sta_password[64] = {0};                   // 密码
@@ -93,14 +93,14 @@ static void handleRootPost() // Post回调函数,检查是否有账号密码参�
             Serial.print("get username:");                         // 打印日志
             String temp_username = esp8266_server.arg("username"); // 获取账号参数
             Serial.println(temp_username);                         // 打印用户名
-            if (temp_username == LOGIN_USERNAME)                   // 判断用户名是否正确
+            if (temp_username.compareTo(LOGIN_USERNAME))           // 判断用户名是否正确
             {
                 if (esp8266_server.hasArg("userpassword")) // 判断是否有密码参数
                 {
                     Serial.print("get userpassword:");                         // 打印日志
                     String temp_password = esp8266_server.arg("userpassword"); // 获取密码参数
                     Serial.println(temp_password);                             // 打印密码
-                    if (temp_password == LOGIN_PASSWORD)                       // 判断密码是否正确
+                    if (temp_password.compareTo(LOGIN_PASSWORD))               // 判断密码是否正确
                     {
                         memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                             // 清空缓冲区
                         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中

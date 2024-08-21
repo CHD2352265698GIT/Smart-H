@@ -39,7 +39,7 @@ void setup()
   p_WIFI_STA_AP = &WIFI;                          // 保存WIFI_STA_AP类的指针
   Serial.begin(921600);                           // 设置串口波特率
   WIFI.WifiConnectCallBack = WifiConnectCallBack; // 设置WIFI连接回调函数
-  WIFI.initSoftAP_STA();                          // 初始化WIFI SoftAP模式
+  WIFI.initSoftAP();                              // 初始化WIFI SoftAP模式
   WIFI.initWebServer();                           // 初始化WIFI WebServer
   pinMode(LED_PIN, OUTPUT);                       // 设置GPIO模式为输出
   WIFI.connectNewWifi();                          // 连接WIFI
@@ -51,7 +51,6 @@ void setup()
 // 主循环
 void loop()
 {
-
   Emqx->getMQTTClient()->loop(); //  mqtt客户端监听
   // Task1任务，每秒打印一次时间
   Task1.RunTask([]()

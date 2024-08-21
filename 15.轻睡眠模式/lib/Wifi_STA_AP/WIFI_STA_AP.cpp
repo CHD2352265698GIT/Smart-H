@@ -188,9 +188,9 @@ void WIFI_STA_AP::Read_WIFI_STA_AP_Config() // 从flash读取wifi信息
     Serial.printf("sta_ssid: %s\n", sta_ssid);                            // 打印账号
     Serial.printf("sta_password: %s\n", sta_password);                    // 打印密码
 }
-void WIFI_STA_AP::initSoftAP_STA(void) // 初始化AP模式
+void WIFI_STA_AP::initSoftAP(void) // 初始化AP模式
 {
-    WiFi.mode(WIFI_AP_STA);                                     // 切换到AP模式
+    WiFi.mode(WIFI_AP);                                         // 切换到AP模式
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0)); // 设置ap的IP和网关
     if (WiFi.softAP(AP_NAME))                                   // 创建一个wifi
     {

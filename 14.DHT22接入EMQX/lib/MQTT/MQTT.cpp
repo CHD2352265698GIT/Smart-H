@@ -89,7 +89,7 @@ Connect_Emqx::Connect_Emqx() //  MQTT初始化
     PubSub.setClient(Client);                 // 设置mqtt客户端
     PubSub.setServer(MQTT_SERVER, MQTT_PORT); // 设置mqtt服务器，IP和端口
     PubSub.setCallback(mqtt_callback);        // 设置回调函数
-    PubSub.setKeepAlive(10);                  // 设置心跳时间
+    PubSub.setKeepAlive(60);                  // 设置心跳时间
     clientReconnect();                        // 连接mqtt服务器
 }
 void Connect_Emqx::clientReconnect() // mqtt重连
