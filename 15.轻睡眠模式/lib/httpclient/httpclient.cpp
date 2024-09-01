@@ -30,13 +30,13 @@ void weather::weatherRequest(const char *key, const char *Request_location, http
         Serial.println(response);
         if (espClient->find("\r\n\r\n"))
         {
-            String Json_form_server = espClient->readStringUntil('\n'); // 读取Json数据
-            Serial.println(Json_form_server);
-            JsonDocument doc;
-            deserializeJson(doc, Json_form_server);
-            result.temperature = doc["results"][0]["now"]["temperature"].as<String>().toInt();
-            result.weather_txt = doc["results"][0]["now"]["text"].as<String>();
-            result.weather_code = doc["results"][0]["now"]["code"].as<String>().toInt();
+            String Json_form_server = espClient->readStringUntil('\n');                        // 读取Json数据
+            Serial.println(Json_form_server);                                                  // 打印Json数据
+            JsonDocument doc;                                                                  // 创建Json文档
+            deserializeJson(doc, Json_form_server);                                            // 解析Json数据
+            result.temperature = doc["results"][0]["now"]["temperature"].as<String>().toInt(); // 温度
+            result.weather_txt = doc["results"][0]["now"]["text"].as<String>();                // 获取天气描述
+            result.weather_code = doc["results"][0]["now"]["code"].as<String>().toInt();       // 获取天气代码
         }
     }
     else

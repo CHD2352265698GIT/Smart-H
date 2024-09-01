@@ -1,16 +1,29 @@
 #include <MQTT.h>
-
+#include <ArduinoJson.h>
 Connect_Emqx *set;          // 创建一个全局指针，指向Connect_Emqx类
 static WiFiClient Client;   // 创建网络连接客户端
 static PubSubClient PubSub; // 创建mqtt连接客户端
 // MQTT消息回调函数，该函数会在PubSubClient对象的loop方法中被调用
 void mqtt_callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.println("----------------START----------------");
-    set->LED_status = payload[0] - '0';
-    Serial.printf("LED status: %d", (int)set->LED_status);
-    set->setLed(set->LED_status); // 设置LED状态
-    Serial.println("----------------END----------------");
+    Serial.println("----------------START----------------"); // 打印开始
+    Serial.printf("topic: %s\n", topic);                     // 打印主题
+    Serial.printf("payload: %s\n", payload);                 // 打印消息内容
+    JsonDocument doc;
+    String jsonStr = String((char *)payload);            // 转换为字符串
+    deserializeJson(doc, jsonStr);                       // 解析Json数据
+    int CWifiSet = doc["CWifiSet"].as<String>().toInt(); // 获取Wifi设置
+    if (CWifiSet == 1)                                   // 如果设置了Wifi
+    {
+        Serial.printf("CWifiSet:%d\n", CWifiSet); // 打印Wifi设置
+        p_WIFI_STA_AP->eraseWifiConfig();         // 清除flash中的WIFI信息
+        goto exit;                                // 跳出函数
+    }
+    set->LED_status = doc["LED"].as<String>().toInt();     // 获取LED状态
+    Serial.printf("LED status: %d", (int)set->LED_status); // 打印LED状态
+    set->setLed(set->LED_status);                          // 设置LED状态
+exit:                                                      // 跳出函数
+    Serial.println("----------------END----------------"); // 打印结束
 }
 Connect_aliyun::Connect_aliyun()
 {
@@ -90,7 +103,6 @@ Connect_Emqx::Connect_Emqx() //  MQTT初始化
     PubSub.setServer(MQTT_SERVER, MQTT_PORT); // 设置mqtt服务器，IP和端口
     PubSub.setCallback(mqtt_callback);        // 设置回调函数
     PubSub.setKeepAlive(10);                  // 设置心跳时间
-    clientReconnect();                        // 连接mqtt服务器
 }
 void Connect_Emqx::clientReconnect() // mqtt重连
 {
@@ -119,13 +131,16 @@ void Connect_Emqx::mqttSubscribe() // mqtt订阅主题
 {
     if (PubSub.connected()) // 如果mqtt客户端连接成功,则订阅主题
     {
-        PubSub.subscribe(MQTT_TOPIC_SUB_LED);                      // 订阅设备下发的命令
-        Serial.printf("订阅MQTT_TOPIC: %s\n", MQTT_TOPIC_SUB_LED); // 打印订阅主题
+        for (char i = 0; i < MQTT_TOPICS.size(); i++) // 遍历所有订阅主题
+        {
+            PubSub.subscribe(MQTT_TOPICS[i].c_str());                      // 订阅设备下发的命令
+            Serial.printf("订阅MQTT_TOPIC: %s\n", MQTT_TOPICS[i].c_str()); // 打印订阅主题
+        }
     }
 }
-void Connect_Emqx::mqttPublish(const char *topic, const char *Message) // mqtt发布post消息(上传数据)
+void Connect_Emqx::mqttPublish(String &topic, const char *Message) // mqtt发布post消息(上传数据)
 {
-    if (PubSub.publish(topic, Message)) // 发布post消息(上传数据),主题、要发布的消息
+    if (PubSub.publish(topic.c_str(), Message)) // 发布post消息(上传数据),主题、要发布的消息
     {
         Serial.print("Post message to cloud: "); // 打印上传数据
         Serial.println(Message);                 //  要发布的消息
@@ -142,4 +157,13 @@ PubSubClient *Connect_Emqx::getMQTTClient() // 获取MQTT客户端
 WiFiClient *Connect_Emqx::getWiFiClient() // 获取WiFi客户端
 {
     return &Client;
+}
+
+void Connect_Emqx::addTopic(const char *topic)
+{
+    MQTT_TOPICS.push_back(topic);
+}
+void Connect_Emqx::addSubpic(const char *subpic)
+{
+    MQTT_SUBPICS.push_back(subpic);
 }

@@ -16,6 +16,7 @@ public:
     void (*WifiConnectCallBack)(void); // 回调函数
     void Write_WIFI_STA_AP_Config();   // 写入wifi信息到flash
     void Read_WIFI_STA_AP_Config();    // 从flash读取wifi信息
+    void eraseWifiConfig();            // 擦除Wifi信息
     void initSoftAP(void);             // 初始化AP模式
     void initDNS(void);                // 初始化DNS服务器
     void initWebServer(void);          // 初始化WebServer

@@ -1,29 +1,28 @@
 
 #include <WIFI_STA_AP.h>
 
-static IPAddress apIP(192, 168, 0, 1);                // esp8266-AP-IP地址
-static DNSServer dnsServer;                           // 创建dnsServer实例
-static ESP8266WebServer esp8266_server(80);           // 建立ESP8266WebServer对象，对象名称为esp8266_server
-                                                      // 括号中的数字是网路服务器响应http请求的端口号
-                                                      // 网络服务器标准http端口号为80，因此这里使用80为端口号
-const static String LOGIN_USERNAME = "admin";         // 登录用户名
-const static String LOGIN_PASSWORD = "123456";        // 登录密码
-static char Set_wifi_flag = 0;                        // 标志位，是否设置了wifi
-static char sta_ssid[32] = {0};                       // 账号
-static char sta_password[64] = {0};                   // 密码
-static char sta_ssid_len = 0;                         // 账号长度
-static char sta_password_len = 0;                     // 密码长度
-static char html_Buffer[CONFIG_HTML_SIZE + 1];        // 定义一个缓冲区用于存放网页内容
+static IPAddress apIP(192, 168, 0, 1);                  // esp8266-AP-IP地址
+static DNSServer dnsServer;                             // 创建dnsServer实例
+static ESP8266WebServer esp8266_server(80);             // 建立ESP8266WebServer对象，对象名称为esp8266_server
+                                                        // 括号中的数字是网路服务器响应http请求的端口号
+                                                        // 网络服务器标准http端口号为80，因此这里使用80为端口号
+const static String LOGIN_USERNAME = "admin";           // 登录用户名
+const static String LOGIN_PASSWORD = "123456";          // 登录密码
+static char Set_wifi_flag = 0;                          // 标志位，是否设置了wifi
+static char sta_ssid[32] = {0};                         // 账号
+static char sta_password[64] = {0};                     // 密码
+static char sta_ssid_len = 0;                           // 账号长度
+static char sta_password_len = 0;                       // 密码长度
+static char html_Buffer[CONFIG_HTML_SIZE + 1];          // 定义一个缓冲区用于存放网页内容
 static String error_message = "<meta charset='UTF-8'><h1 style=\" \
-position : absolute;top : 40 \% ;left : 50 \% ;transform : \
-translate(-50 \%, -50 \%);text - align : center;\">"; // 错误信息
-WIFI_STA_AP *p_WIFI_STA_AP;                           // 创建WIFI_STA_AP实例指针
-static void handleRoot()                              // 根目录回调函数
+position : absolute;top : 40 \%% ;left : 50 \%% ;transform : \
+translate(-50 \%%, -50 \%%);text - align : center;\">"; // 错误信息
+WIFI_STA_AP *p_WIFI_STA_AP;                             // 创建WIFI_STA_AP实例指针
+static void handleRoot()                                // 根目录回调函数
 {
     memset(html_Buffer, '\0', CONFIG_HTML_SIZE + 1);                           // 清空缓冲区
     spi_flash_read(LOGIN_HTML_ADDR, (uint32_t *)html_Buffer, LOGIN_HTML_SIZE); // 读取网页内容到html_Buffer中
     esp8266_server.send(200, "text/html", html_Buffer);                        // send返回html页面
-    Set_wifi_flag = 0;                                                         // 重置标志位
 }
 static void handleConfigPost(char &flag) // Post回调函数,检查各项参数
 {
@@ -58,6 +57,7 @@ static void handleConfigPost(char &flag) // Post回调函数,检查各项参数
         {                                                                                         // 没有参数
             Serial.println("error, not found ssid");                                              // 打印日志
             esp8266_server.send(200, "text/html", "<meta charset='UTF-8'>error, not found ssid"); // 返回错误页面
+            flag = 0;                                                                             // 设置标志位，重新登录
             return;
         }
         if (esp8266_server.hasArg("password")) // 判断是否有密码参数
@@ -72,9 +72,11 @@ static void handleConfigPost(char &flag) // Post回调函数,检查各项参数
         {
             Serial.println("error, not found password");                                              // 打印日志
             esp8266_server.send(200, "text/html", "<meta charset='UTF-8'>error, not found password"); // 返回错误页面
+            flag = 0;                                                                                 // 设置标志位，重新登录
             return;
         }
-        flag = 0;                                  // 设置标志位，表示已经设置了wifi
+        Serial.println("clean Set_wifi_flag");     // 打印日志
+        flag = 0;                                  // 设置标志位，重新登录
         p_WIFI_STA_AP->Write_WIFI_STA_AP_Config(); // 保存wifi信息到flash
         p_WIFI_STA_AP->connectNewWifi();           // 连接新的wifi
     }
@@ -106,7 +108,7 @@ static void handleRootPost() // Post回调函数,检查是否有账号密码参�
                         spi_flash_read(CONFIG_HTML_ADDR, (uint32_t *)html_Buffer, CONFIG_HTML_SIZE); // 读取网页内容到html_Buffer中
                         esp8266_server.send(200, "text/html", html_Buffer);                          // 登录成功，发送设置页面
                         Set_wifi_flag = 1;                                                           // 设置标志位，表示已经登录成功
-                        Serial.println("Login Success");                                             // 打印日志
+                        Serial.printf("Login Success:%d\n", (int)Set_wifi_flag);                     // 打印日志
                         return;
                     }
                     else
@@ -136,36 +138,52 @@ static void handleRootPost() // Post回调函数,检查是否有账号密码参�
 }
 void WIFI_STA_AP::connectNewWifi() // 读取flash保存的wifi信息后连接
 {
+    WiFi.mode(WIFI_STA);       // 切换到STA模式
     WiFi.setAutoConnect(true); // 设置自动连接
     Serial.println("\n");
     Read_WIFI_STA_AP_Config();          // 读取flash保存的wifi信息
     WiFi.begin(sta_ssid, sta_password); // 连接上一次连接成功的wifi
     Serial.print("Connect to wifi");    // 打印日志
-    Ticker timer1;                      // 实例化定时器类
-    timer1.attach_ms(250, []()
-                     { led.toggle(); Serial.print("."); });                // 定时每隔0.5s切换一次LED状态
+    for (int i = 0; i < 10; i++)
+    {
+        Serial.printf(".");
+        delay(1000);
+        if (WiFi.status() == WL_CONNECTED) // 如果连接成功，打印日志并跳出循环
+        {
+            Serial.println("Connect to wifi Success!");
+            esp8266_server.stop();             // 关闭WebServer
+            dnsServer.stop();                  // 关闭DNS服务器
+            WiFi.mode(WIFI_STA);               // 切换回STA模式
+            Serial.println("WIFI Connected!"); // 打印日志
+            Serial.print("IP address: ");      // 打印日志
+            Serial.println(WiFi.localIP());    // 打印esp8266的IP地址
+            led.blink(4);                      // 闪烁6次LED
+            WifiConnectCallBack();             // 连接成功后回调函数
+            break;
+        }
+    }
+    if (WiFi.status() != WL_CONNECTED) // 如果连接失败，打印日志并重新连接
+    {
+        initSoftAP();    // 初始化WIFI SoftAP模式
+        initWebServer(); // 初始化WIFI WebServer
+        initDNS();       // 初始化DNS服务器
+    }
     while (WiFi.status() != WL_CONNECTED) // 如果未连接上wifi
     {
-        esp8266_server.handleClient(); // 死循环处理客户端请求
+        esp8266_server.handleClient();  // 死循环处理客户端请求
+        dnsServer.processNextRequest(); // 处理DNS请求
+        led.toggle();
+        Serial.print(".");
+        delay(250); // 延时250ms
     }
-    timer1.detach(); // 关闭定时器
     Serial.println("\n");
-    if (WiFi.status() == WL_CONNECTED) // 如果连接上 就输出IP信息 防止未连接上break后会误输出
-    {
-        WiFi.mode(WIFI_STA);               // 切换回STA模式
-        Serial.println("WIFI Connected!"); // 打印日志
-        Serial.print("IP address: ");      // 打印日志
-        Serial.println(WiFi.localIP());    // 打印esp8266的IP地址
-        led.blink(4);                      // 闪烁6次LED
-        WifiConnectCallBack();             // 连接成功后回调函数
-    }
 }
 void WIFI_STA_AP::Write_WIFI_STA_AP_Config() // 写入wifi信息到flash
 {
     // 保存wifi信息到flash
     char temp_ss[sta_ssid_len + sta_password_len + 2] = {'\0'}; // 计算信息长度
     Serial.printf("%d,%d", (int)sta_ssid_len, (int)sta_password_len);
-    spi_flash_erase_sector(FLASH_PAGE); // 先擦除之前保存的wifi信息
+    spi_flash_erase_sector(WIFI_INFO_PAGE); // 先擦除之前保存的wifi信息
     temp_ss[0] = sta_ssid_len;
     temp_ss[1] = sta_password_len;
     strcat(temp_ss, sta_ssid);     // 连接账号
@@ -179,6 +197,11 @@ void WIFI_STA_AP::Read_WIFI_STA_AP_Config() // 从flash读取wifi信息
     spi_flash_read(FLASH_BASE_ADDR, (uint32_t *)temp, 4); // 读取之前保存的wifi信息
     sta_ssid_len = temp[0];                               // 读取账号长度
     sta_password_len = temp[1];                           // 读取密码长度
+    if (sta_ssid_len == 0xff && sta_password_len == 0xff)
+    {
+        Serial.println("No Wifi Config!"); // 打印日志
+        return;
+    }
     int Information_len = sta_ssid_len + sta_password_len;
     char temp_ss[Information_len + 1] = {'\0'};                           // 计算信息长度
     spi_flash_read(WIFI_INFO_ADDR, (uint32_t *)temp_ss, Information_len); // 读取wifi信息
@@ -187,6 +210,8 @@ void WIFI_STA_AP::Read_WIFI_STA_AP_Config() // 从flash读取wifi信息
     temp_ss[Information_len] = '\0';                                      // 添加字符串结束符
     Serial.printf("sta_ssid: %s\n", sta_ssid);                            // 打印账号
     Serial.printf("sta_password: %s\n", sta_password);                    // 打印密码
+    Serial.println(temp_ss);                                              // 打印账号长度
+    Serial.printf("lenth: %d\n", Information_len);
 }
 void WIFI_STA_AP::initSoftAP(void) // 初始化AP模式
 {
@@ -215,4 +240,10 @@ void WIFI_STA_AP::initWebServer(void) // 初始化WebServer
     esp8266_server.on("/", HTTP_POST, handleRootPost); // 设置Post请求回调函数
     esp8266_server.begin();                            // 启动WebServer
     Serial.println("WebServer started!");              // 打印WebServer是否启动
+}
+
+void WIFI_STA_AP::eraseWifiConfig() // 擦除Wifi信息
+{
+    spi_flash_erase_sector(WIFI_INFO_PAGE);       // 擦除flash扇区
+    Serial.println("Erase Wifi Config Success!"); // 打印日志
 }
